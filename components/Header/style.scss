@@ -7,4 +7,7 @@
   flex-direction: column;
   width: 24rem;
   background: #242d3e;
+  @media (max-width: 768px) {
+    //transform: translateX(-100%);
+  }
 }

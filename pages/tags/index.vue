@@ -2,7 +2,7 @@
   <div class="">
     <div :class="$style.header">
       <div :class="$style.title">
-        Разделы
+        Пользователи
       </div>
       <div :class="$style.panel">
 
@@ -22,7 +22,7 @@ import { ref, useContext, onMounted, useRouter } from '@nuxtjs/composition-api';
 
 
 export default {
-  name: "Sections",
+  name: "Users",
   components: {
 
   },
@@ -31,18 +31,23 @@ export default {
     const router = useRouter()
     const columns = ref([
       {
-        label: 'Название',
-        field: 'title',
+        label: 'Имя',
+        field: 'nickname',
         type: 'text'
       },
       {
-        label: 'Описание',
-        field: 'description',
+        label: 'Телефон',
+        field: 'phone',
         type: 'text'
       },
       {
-        label: 'Сортировка',
-        field: 'sort',
+        label: 'Email',
+        field: 'email',
+        type: 'text'
+      },
+      {
+        label: 'Заметка',
+        field: 'note',
         type: 'text'
       }
     ])
@@ -73,15 +78,15 @@ export default {
     ])
     const editRow = (params) => {
       router.push({
-        path: `/sections/${params.row.id}`,
+        path: `/users/${params.row.id}`,
         query: { title: params.row.title }
       })
     }
     const getSections = async () => {
       loading.value = true
-      const data = await store.dispatch('sections/getSections')
+      const data = await store.dispatch('users/getUsers')
       sections.value = data
-      tableOptions.value.dataTable = sections.value
+      tableOptions.value.dataTable = sections.value.data
       loading.value = false
     }
     onMounted(() => {
