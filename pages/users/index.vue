@@ -13,6 +13,7 @@
     :loading="loading"
     :tableOptions="tableOptions"
     @rowClick="editRow"
+    @changePage="changePage"
     />
   </div>
 </template>
@@ -53,40 +54,37 @@ export default {
     ])
     const tableOptions = ref({
       columns: columns.value,
-      dataTable: []
+      dataTable: [],
+      paginationOptions: {
+        enable: true
+      },
+      totalRows: null,
+      perPage: 10
     })
-
+    const paramsSearch = ref({
+      searchField: '',
+      page: 1,
+      count: 10
+    })
     const loading = ref(false)
     const sections = ref([])
-    const dataTable = ref([
-      { id:1, name:"John", age: 20, createdAt: '2011-10-31',score: 0.03343 },
-      { id:2, name:"Jane", age: 24, createdAt: '2011-10-31', score: 0.03343 },
-      { id:3, name:"Susan", age: 16, createdAt: '2011-10-30', score: 0.03343 },
-      { id:4, name:"Chris", age: 55, createdAt: '2011-10-11', score: 0.03343 },
-      { id:5, name:"Dan", age: 40, createdAt: '2011-10-21', score: 0.03343 },
-      { id:1, name:"John", age: 20, createdAt: '2011-10-31',score: 0.03343 },
-      { id:2, name:"Jane", age: 24, createdAt: '2011-10-31', score: 0.03343 },
-      { id:3, name:"Susan", age: 16, createdAt: '2011-10-30', score: 0.03343 },
-      { id:4, name:"Chris", age: 55, createdAt: '2011-10-11', score: 0.03343 },
-      { id:5, name:"Dan", age: 40, createdAt: '2011-10-21', score: 0.03343 },
-      { id:1, name:"John", age: 20, createdAt: '2011-10-31',score: 0.03343 },
-      { id:2, name:"Jane", age: 24, createdAt: '2011-10-31', score: 0.03343 },
-      { id:3, name:"Susan", age: 16, createdAt: '2011-10-30', score: 0.03343 },
-      { id:4, name:"Chris", age: 55, createdAt: '2011-10-11', score: 0.03343 },
-      { id:5, name:"Dan", age: 40, createdAt: '2011-10-21', score: 0.03343 },
-      { id:6, name:"John", age: 20, createdAt: '2011-10-31', score: 0.03343 }
-    ])
     const editRow = (params) => {
       router.push({
         path: `/users/${params.row.id}`,
         query: { title: params.row.title }
       })
     }
+    const changePage = (newPage) => {
+      console.log(newPage)
+      paramsSearch.value.page = newPage
+      getSections()
+    }
     const getSections = async () => {
       loading.value = true
-      const data = await store.dispatch('users/getUsers')
+      const data = await store.dispatch('users/getUsers', paramsSearch.value)
       sections.value = data
       tableOptions.value.dataTable = sections.value.data
+      tableOptions.value.totalRows = sections.value.total
       loading.value = false
     }
     onMounted(() => {
@@ -95,12 +93,13 @@ export default {
 
     return {
       columns,
-      dataTable,
       getSections,
       sections,
       tableOptions,
       loading,
-      editRow
+      editRow,
+      paramsSearch,
+      changePage
     }
   }
 }

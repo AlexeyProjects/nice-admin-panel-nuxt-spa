@@ -88,9 +88,7 @@ export default {
       const data = await store.dispatch('sections/getSections')
       console.log(data)
       console.log(route.value.params.id)
-      console.log(data[0])
-      console.log(data[0].id == +route.value.params.id)
-      item.value = data.find(item => item.id == route.value.params.id)
+      item.value = data.data.find(item => item.id == route.value.params.id)
       formData.value = {
         ...item.value
       }

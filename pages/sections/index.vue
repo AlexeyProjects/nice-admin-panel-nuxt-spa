@@ -13,6 +13,7 @@
     :loading="loading"
     :tableOptions="tableOptions"
     @rowClick="editRow"
+    @changePage="changePage"
     />
   </div>
 </template>
@@ -48,9 +49,21 @@ export default {
     ])
     const tableOptions = ref({
       columns: columns.value,
-      dataTable: []
+      dataTable: [],
+      paginationOptions: {
+        enable: true
+      },
+      totalRows: null,
+      perPage: 10
     })
-
+    const paramsSearch = ref({
+      section_id: null,
+      searchField: '',
+      author_id: null,
+      tags: [],
+      page: 1,
+      count: 10
+    })
     const loading = ref(false)
     const sections = ref([])
     const dataTable = ref([
@@ -77,11 +90,17 @@ export default {
         query: { title: params.row.title }
       })
     }
+    const changePage = (newPage) => {
+      console.log(newPage)
+      paramsSearch.value.page = newPage
+      getSections()
+    }
     const getSections = async () => {
       loading.value = true
-      const data = await store.dispatch('sections/getSections')
+      const data = await store.dispatch('sections/getSections', paramsSearch.value)
       sections.value = data
-      tableOptions.value.dataTable = sections.value
+      tableOptions.value.dataTable = sections.value.data
+      tableOptions.value.totalRows = sections.value.total
       loading.value = false
     }
     onMounted(() => {
@@ -95,7 +114,9 @@ export default {
       sections,
       tableOptions,
       loading,
-      editRow
+      editRow,
+      paramsSearch,
+      changePage
     }
   }
 }

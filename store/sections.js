@@ -11,7 +11,7 @@ export const mutations = {
 export const actions = {
   async getSections ({ commit }, params) {
     try {
-      const res = await this.$axios.get('sections', params)
+      const res = await this.$axios.post('sectionsSearch', params)
       commit('setSections', res.data.data)
       return res.data.data
     } catch (e) {

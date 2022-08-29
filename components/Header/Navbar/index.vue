@@ -25,6 +25,10 @@ export default {
       {
         title: 'Теги',
         url: '/tags'
+      },
+      {
+        title: 'Карточки',
+        url: '/cards'
       }
     ])
     return {
