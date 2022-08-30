@@ -63,13 +63,13 @@ export default {
       author_id: null,
       tags: [],
       page: 1,
-      count: 10
+      count: 30
     })
     const loading = ref(false)
     const sections = ref([])
     const editRow = (params) => {
       router.push({
-        path: `/users/${params.row.id}`,
+        path: `/cards/${params.row.id}`,
         query: { title: params.row.title }
       })
     }

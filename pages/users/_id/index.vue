@@ -43,6 +43,7 @@
               <input v-model="formData.note" type="text"/>
             </label>
           </div>
+          
         </div>
 
         <button @click.prevent="submit" class="btn">
