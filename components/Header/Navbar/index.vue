@@ -16,19 +16,38 @@ export default {
     const navItems = ref([
       {
         title: 'Разделы',
-        url: '/sections'
+        url: '/sections',
+        icon: 'IconsHeaderSections'
       },
       {
         title: 'Пользователи',
-        url: '/users'
+        url: '/users',
+        icon: 'IconsHeaderUsers'
       },
       {
         title: 'Теги',
-        url: '/tags'
+        url: '/tags',
+        icon: 'IconsHeaderTags'
       },
       {
         title: 'Карточки',
-        url: '/cards'
+        url: '/cards',
+        icon: 'IconsHeaderCards'
+      },
+      {
+        title: 'Заказы',
+        url: '/orders',
+        icon: 'IconsHeaderOrders'
+      },
+      {
+        title: 'Эфир',
+        url: '/live',
+        icon: 'IconsHeaderLive'
+      },
+      {
+        title: 'Провода',
+        url: '/wires',
+        icon: 'IconsHeaderWires'
       }
     ])
     return {

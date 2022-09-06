@@ -1,10 +1,10 @@
 <template>
   <div class="wrap wrap-loading">
     <UILoading
-    v-if="loading"
+    v-if="loading && !sectionChoosed"
     />
     <div
-    v-show="!loading"
+    v-show="!loading && sectionChoosed"
     class="">
       <form action="">
         <div class="main">
@@ -41,6 +41,7 @@
               <input type="datetime-local" class="form-control" v-model="formData.date_event" id="date_event" name="date_event" value="">
             </label>
           </div>
+          
           <div class="input checkbox">
             <label>
               <span class="label">
@@ -100,13 +101,12 @@
           track-by="id"
           :multiple="true"/>
 
-          <inputFile v-if="showMusic" @changeFiles="changeAudio" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-15"></inputFile>
-          <inputFile v-if="showVideo" @changeFiles="changeVideo" @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-15"></inputFile>
+          <inputFile v-if="showMusic" @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-15"></inputFile>
+          <inputFile v-if="showVideo" @changeFiles="changeVideo" accept="video/*"  @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-15"></inputFile>
           <!-- <editor/> -->
 
           <div class="editor">
-            <VueEditor class="editor-container mb-15" :editorToolbar="editorToolbar" v-model="formData.text" />
-            <p>Предосмотр</p>
+            <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.text" />
             <div class="editor-preview" v-html="formData.text">
           </div>
           
@@ -118,7 +118,12 @@
         </button>
       </form>
     </div>
-
+    <transition name="fade">
+      <PopupSection 
+      @closePopup="closingChooseSection"
+      @chooseSection="showAddCard"
+      :isShow="showChooseSection"></PopupSection>
+    </transition>
   </div>
 </template>
 
@@ -126,6 +131,7 @@
 import { ref, reactive, onMounted, useContext, computed, nextTick } from '@nuxtjs/composition-api';
 import VueUploadMultipleImage from 'vue-upload-multiple-image';
 import Multiselect from 'vue-multiselect'
+import PopupSection from '~/components/PopupSection/index.vue';
 // import Editor from 'vue-editor-js/src/Editor.vue'
 export default {
   name: 'section-edit',
@@ -133,18 +139,35 @@ export default {
     VueUploadMultipleImage,
     Multiselect
     // Editor
-  },
+    ,
+    PopupSection
+},
   setup() {
     const { store, route, $toast, $axios } = useContext()
     const loading = ref(false)
     const formData = ref({
 
     })
+    const showChooseSection = ref(false)
     const isProduct = ref(false)
+    const sectionChoosed = ref(false)
     const tags = ref([])
     const valueMultiSelect = ref([])
     const optionsMultiselect = ref([])
-    const item = ref({})
+    const item = ref(
+        {
+            title: '',
+            text: '',
+            fileIds: [],
+            item_type_id: 1,
+            price: 0,
+            count: 0,
+            date_event: null,
+            section_id: null,
+            tags: [],
+            show_in_main: false
+        }
+    )
     const changedFIle = ref({})
     const imageUploaded = ref([])
     const imagesPreview = ref([])
@@ -153,15 +176,12 @@ export default {
     const audioBasket = ref([])
     const getSections = async () => {
       loading.value = true
-      const data = await store.dispatch(`cards/getCard`, route.value.params.id)
-      item.value = data
+      // const data = await store.dispatch(`cards/getCard`, route.value.params.id)
+      // item.value = data
       optionsMultiselect.value = item.value.tags
       formData.value = {
         ...item.value
       }
-      imagesLoadForPreview()
-      filterVideo()
-      filterAudio()
       loading.value = false
     }
     const editorToolbar = ref(
@@ -247,18 +267,20 @@ export default {
         formData.price = 0
         formData.count = 0
       }
+      if (formData.date_event !== null) {
+        Math.floor(new Date(formData.date_event).getTime())
+      }
       const data = {
-        mode: "edit",
+        mode: "add",
         data: {
           id: formData.value.id,
           title: formData.value.title,
           text: formData.value.text,
           fileIds: basketFiles,
-          item_type_id: formData.value.item_type_id,
-          price: formData.value.price,
-          count:formData.value.count,
-          price: formData.value.price,
-          date_event: formData.value.date_event,
+          item_type_id: 1,
+          price: +formData.value.price,
+          count: +formData.value.count,
+          date_event: null,
           section_id: formData.value.section_id,
           tags: basketTags,
           show_in_main: formData.value.show_in_main
@@ -266,7 +288,7 @@ export default {
       }
       const response = await store.dispatch(`cards/saveCard`, data)
       loading.value = false
-      // $toast.success('Информация сохранена', { position: 'bottom-center', icon: false, duration: 2000 })
+      $toast.success('Информация сохранена', { position: 'bottom-center', icon: false, duration: 2000 })
     }
     const uploadImageSuccess = (formData, index, fileList) => {
       imagesPreview.value = fileList 
@@ -352,7 +374,7 @@ export default {
     }
 
     const showVideo = computed(() => {
-      return item.value.section_id === 2 
+      return item.value.section_id === 2
     })
 
     const showMusic = computed(() => {
@@ -363,9 +385,27 @@ export default {
       return item.value.section_id === 9
     })
 
-    onMounted(() => {
-      getSections()
+    const showingChooseSection = () => {
+      showChooseSection.value = true
+    }
+    const closingChooseSection = () => {
+      showChooseSection.value = false
+    }
+    const showAddCard = (choosedSection) => {
+      showChooseSection.value = false
+      sectionChoosed.value = true
+      item.value.section = {
+        id: choosedSection.id,
+        slug: choosedSection.slug
+      }
+      item.value.section_id = choosedSection.id
       getTags()
+      getSections()
+    }
+
+    onMounted(() => {
+      // getSections()
+      showingChooseSection()
     })
     return {
       formData,
@@ -393,10 +433,15 @@ export default {
       isProduct,
       changeAudio,
       changeVideo,
+      sectionChoosed,
       audioBasket,
       videoBasket,
       deleteAudio,
       deleteVideo,
+      showChooseSection,
+      showingChooseSection,
+      closingChooseSection,
+      showAddCard,
       showDate
       // configEditor
     }

@@ -15,6 +15,7 @@ export const actions = {
       commit('setCards', res.data.data)
       return res.data.data
     } catch (e) {
+      this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
       console.log(e)
     }
   },
@@ -23,9 +24,20 @@ export const actions = {
       const res = await this.$axios.get(`card/${params}`)
       return res.data.data
     } catch (e) {
+      this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
       console.log(e)
     }
-  }
+  },
+  async saveCard ({ commit }, params) {
+    try {
+      const res = await this.$axios.post(`addOrEditCard`, params)
+      this.$toast.success('Информация сохранена', { position: 'bottom-center', icon: false, duration: 2000 })
+      return res.data.data
+    } catch (e) {
+      console.log(e.message)
+      this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
+    }
+  },
 }
 
 

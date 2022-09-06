@@ -13,6 +13,8 @@ export const mutations = {
       this.$axios.defaults.headers.common.Authorization = `Bearer ${token}`
       state.authorizated = true
       state.token = token
+      this.$axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      console.log(this.$axios.defaults.headers.common['Authorization'])
     }
   },
 }

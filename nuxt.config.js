@@ -27,8 +27,11 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     {
-      src: '@plugins/vue-editor.js', ssr: false
-    }
+      src: '@plugins/vue-editor.js'
+    },
+    // {
+    //   src: '@plugins/composition-api.js'
+    // }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -53,7 +56,7 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: 'http://192.168.1.19/api/v1/',
+    baseURL: `${'http://178.20.44.99:3060/api/v1/'}`,
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

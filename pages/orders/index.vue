@@ -2,7 +2,7 @@
   <div class="">
     <div :class="$style.header">
       <div :class="$style.title">
-        Пользователи
+        Заказы
       </div>
       <div :class="$style.panel">
 
@@ -13,7 +13,6 @@
     :loading="loading"
     :tableOptions="tableOptions"
     @rowClick="editRow"
-    @changePage="changePage"
     />
   </div>
 </template>
@@ -30,77 +29,70 @@ export default {
   setup() {
     const { store } = useContext()
     const router = useRouter()
+    const paramsSearch = ref({
+      page: 1,
+      count: 9999
+    })
     const columns = ref([
       {
-        label: 'Имя',
-        field: 'nickname',
+        label: 'ID',
+        field: 'id',
         type: 'text'
       },
       {
-        label: 'Телефон',
-        field: 'phone',
+        label: 'Статус',
+        field: 'status_id',
         type: 'text'
       },
       {
-        label: 'Email',
-        field: 'email',
+        label: 'Пользователь',
+        field: 'FIO',
         type: 'text'
       },
       {
-        label: 'Заметка',
-        field: 'note',
+        label: 'Пользователь',
+        field: 'user_id',
+        type: 'text'
+      },
+      {
+        label: 'Сумма заказа',
+        field: 'basket.cards_sum',
         type: 'text'
       }
     ])
     const tableOptions = ref({
       columns: columns.value,
-      dataTable: [],
-      paginationOptions: {
-        enable: true
-      },
-      totalRows: null,
-      perPage: 10
+      dataTable: []
     })
-    const paramsSearch = ref({
-      searchField: '',
-      page: 1,
-      count: 10
-    })
+
     const loading = ref(false)
     const sections = ref([])
     const editRow = (params) => {
       router.push({
-        path: `/users/${params.row.id}`,
+        path: `/orders/${params.row.id}`,
         query: { title: params.row.title }
       })
     }
-    const changePage = (newPage) => {
-      console.log(newPage)
-      paramsSearch.value.page = newPage
-      getSections()
-    }
     const getSections = async () => {
       loading.value = true
-      console.log(paramsSearch.value)
-      const data = await store.dispatch('users/getUsers', paramsSearch.value)
+      const data = await store.dispatch('orders/getOrders', paramsSearch.value)
       sections.value = data
       tableOptions.value.dataTable = sections.value.data
-      tableOptions.value.totalRows = sections.value.total
+      console.log(tableOptions)
       loading.value = false
     }
     onMounted(() => {
       getSections()
     })
 
-    return {
+    return { 
       columns,
       getSections,
       sections,
       tableOptions,
       loading,
       editRow,
-      paramsSearch,
-      changePage
+      paramsSearch
     }
   }
 }

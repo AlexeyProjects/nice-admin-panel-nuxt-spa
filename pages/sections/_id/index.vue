@@ -8,8 +8,13 @@
     class="">
       <form action="">
         <div class="main">
-          <div :class="$style.title">
-            {{ item.title }}
+          <div class="head mb-15">
+            <button @click.prevent="$router.push('/cards')" class="btn back">
+              Назад
+            </button>
+            <div :class="$style.title">
+              {{ item.title }}
+            </div>
           </div>
           <div class="input">
             <label for="">
@@ -119,7 +124,6 @@ export default {
 <style module lang="scss">
   .title {
     font-size: 2.4rem;
-    margin-bottom: 1rem;
   }
   .seotitle {
     margin-bottom: 1rem;

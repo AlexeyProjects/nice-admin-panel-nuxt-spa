@@ -2,11 +2,16 @@
   <div class="">
     <div :class="$style.header">
       <div :class="$style.title">
-        Карточки
+        <!-- <div class="menu burger">
+          <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 50 50" width="50px" height="50px"><path d="M 0 7.5 L 0 12.5 L 50 12.5 L 50 7.5 Z M 0 22.5 L 0 27.5 L 50 27.5 L 50 22.5 Z M 0 37.5 L 0 42.5 L 50 42.5 L 50 37.5 Z"/></svg>
+        </div> -->
+        <div class="">
+          Карточки
+        </div>
       </div>
-      <div :class="$style.panel">
-
-      </div>
+      <NuxtLink to="/cards/add" class="btn add" :class="$style.add">
+        Добавить
+      </NuxtLink>
     </div>
     <TableDefault
     title="Карточки"
@@ -16,6 +21,8 @@
     @rowClick="editRow"
     @changePage="changePage"
     />
+    
+    
   </div>
 </template>
 
@@ -39,7 +46,7 @@ export default {
       },
       {
         label: 'Раздел',
-        field: 'section_id',
+        field: 'section.slug',
         type: 'text'
       },
       {
@@ -55,7 +62,7 @@ export default {
         enable: true
       },
       totalRows: null,
-      perPage: 10
+      perPage: 30
     })
     const paramsSearch = ref({
       section_id: null,
@@ -106,9 +113,18 @@ export default {
 </script>
 
 <style lang="scss" module>
+  .header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    .add {
+      display: inline-flex;
+    }
+  }
   .title {
     font-size: 2.4rem;
-    margin-bottom: 1rem;
+
   }
   .wrap {
     position: relative;
