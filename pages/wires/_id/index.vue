@@ -14,8 +14,12 @@
                 Назад
               </button>
               <div :class="$style.title">
-               <!-- {{ $route.params.id }} -->
               </div>
+            </div>
+            <div :class="$style.rightpanel">
+              <button @click.prevent="delletePairs()" class="btn red">Удалить</button> 
+              <!-- <button class="btn red">Отменить</button> -->
+              <!-- <button class="btn green">В обработку</button> -->
             </div>
           </div>
 
@@ -110,7 +114,6 @@ export default {
     const getSections = async () => {
       loading.value = true
       const data = await store.dispatch('wires/getWires', paramsSearch.value)
-      console.log(paramsSearch.value)
       const rulesData = await store.dispatch('wires/getWiresRules', paramsSearch.value)
       dataTableLeft.value = [
         ...data.data
@@ -124,7 +127,6 @@ export default {
       })
       dataTableRight.value = JSON.parse(JSON.stringify(dataTableLeft.value))
       initRules()
-      console.log(route.value.params.id)
       loading.value = false
     }
     const initRules = () => {
@@ -136,15 +138,28 @@ export default {
           item.disable = true
         }
       })
-      dataTableLeft.value.forEach(item => {
-        console.log(item.id)
-        console.log(rules.value[0].id)
-        if (item.id === rules.value[0].id){
-          item.choosed = true
-        } else {
-          item.disable = true
-        }
+      dataTableRight.value.forEach(item => {
+        rules.value.forEach(itemRule => {
+          if (item.id === itemRule.id) {
+            console.log(item)
+            item.choosed = true
+          }
+          
+        })
       })
+      
+
+      // const resultArray = leastArr.filter((item) => {
+      //   return biggestArr.some((item2) => item2.id === item.id)
+      // });
+      // dataTableLeft.value.forEach(item => {
+      //   if (item.id === +route.value.params.id){
+      //     console.log(item)
+      //     item.choosed = true
+      //   } else {
+      //     item.disable = true
+      //   }
+      // })
     }
     const choosedStartWire = computed(() => {
       return dataTableLeft.value.find(wire => wire.choosed)
@@ -156,7 +171,6 @@ export default {
       if (!clicked.choosed) {
         dataTableLeft.value.forEach((wire, index) => {
           if (clicked !== wire) {
-            console.log(wire)
             wire.disable = true
             wire.choosed = false
           }
@@ -185,7 +199,6 @@ export default {
       if (!clicked.choosed) {
         dataTableRight.value.forEach((wire, index) => {
           if (clicked !== wire) {
-            console.log(wire)
             // wire.disable = true
             // wire.choosed = false
           }
@@ -202,6 +215,15 @@ export default {
     }
     const submit = async () => {
       await store.dispatch('')
+    }
+    const delletePairs = async () => {
+      loading.value = true
+      const params = {
+        entity: 'pair',
+        id: route.value.params.id
+      }
+      await store.dispatch('wires/deletePairs', params)
+      loading.value = false
     }
     const openWire = (id) => {
       router.push({
@@ -225,7 +247,8 @@ export default {
       openWire,
       rules,
       paramsSearch,
-      initRules
+      initRules,
+      delletePairs
     }
   }
 }

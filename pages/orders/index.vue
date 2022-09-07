@@ -13,6 +13,7 @@
     :loading="loading"
     :tableOptions="tableOptions"
     @rowClick="editRow"
+    @searchInput="searchInput"
     />
   </div>
 </template>
@@ -78,8 +79,12 @@ export default {
       const data = await store.dispatch('orders/getOrders', paramsSearch.value)
       sections.value = data
       tableOptions.value.dataTable = sections.value.data
-      console.log(tableOptions)
       loading.value = false
+    }
+    const searchInput = async (searchParams) => {
+      loading.value = true
+      paramsSearch.value.searchField = searchParams
+      getSections()
     }
     onMounted(() => {
       getSections()
@@ -92,7 +97,8 @@ export default {
       tableOptions,
       loading,
       editRow,
-      paramsSearch
+      paramsSearch,
+      searchInput
     }
   }
 }

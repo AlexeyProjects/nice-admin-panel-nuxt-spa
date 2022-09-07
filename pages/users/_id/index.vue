@@ -69,18 +69,12 @@ export default {
     const getSections = async () => {
       loading.value = true
       const data = await store.dispatch('users/getUsers')
-      console.log(data.data)
-      console.log(route.value.params.id)
-      console.log(data.data[0])
-      console.log(data.data[0].id == +route.value.params.id)
       item.value = data.data.find(item => item.id == route.value.params.id)
       formData.value = {
         ...item.value
       }
       loading.value = false
     }
-    console.log('s')
-    console.log(useContext())
     const submit = async () => {
       const data = {
         user_id: formData.value.id,
@@ -90,7 +84,6 @@ export default {
       const response = await store.dispatch('users/changeNote', data)
       $toast.success('Информация сохранена', { position: 'bottom-center', icon: false, duration: 2000 })
       loading.value = false
-      console.log(response)
     }
     onMounted(() => {
       getSections()

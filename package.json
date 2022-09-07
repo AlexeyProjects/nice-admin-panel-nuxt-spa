@@ -13,6 +13,7 @@
     "@nuxtjs/composition-api": "^0.33.1",
     "@nuxtjs/toast": "^3.3.1",
     "@vuelidate/core": "^2.0.0-alpha.44",
+    "@vuelidate/validators": "^2.0.0-alpha.31",
     "core-js": "^3.19.3",
     "lodash": "^4.17.21",
     "nuxt": "^2.15.8",

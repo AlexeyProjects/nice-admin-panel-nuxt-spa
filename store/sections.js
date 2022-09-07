@@ -23,7 +23,6 @@ export const actions = {
     try {
       const data = await this.$axios.post('editSection', params)
       //commit('setSections', res.data.data)
-      console.log(data)
       return data
     } catch (e) {
       console.log(e)

@@ -5,6 +5,11 @@
       v-if="$props.loading"
       />
       <div  class="">
+        <div :class="$style.search">
+          <div class="">
+            <input @input="searchInput" v-model="searchTerm" placeholder="Поиск" type="text">
+          </div>
+        </div>
         <vue-good-table
         v-if="!$props.loading"
         @on-row-click="onRowClick"
@@ -61,12 +66,11 @@ export default {
   setup(props, ctx) {
     const { emit } = ctx
     const currentPage = ref(1)
+    const searchTerm = ref('')
     const onRowClick = (params) => {
-      console.log(params)
       emit('rowClick', params)
     }
     const changePage = (numPage) => {
-      console.log(numPage)
       emit('changePage', numPage)
     }
     onMounted(() => {
@@ -75,11 +79,16 @@ export default {
     const pageCount = computed(() => {
       return Math.ceil(props.tableOptions.totalRows/props.tableOptions.perPage)
     })
+    const searchInput = () => {
+      emit('searchInput', searchTerm.value)
+    }
     return {
       onRowClick,
       currentPage,
       changePage,
-      pageCount
+      pageCount,
+      searchTerm,
+      searchInput
     }
 
   }
@@ -95,6 +104,19 @@ export default {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+  }
+  .search {
+    width: 100%;
+    margin-bottom: 1rem;
+    input {
+      width: 100%;
+      font-size: 1.6rem;
+      background-color: transparent;
+      border: 0;
+      border-bottom: 2px solid #ccc;
+      padding: 1rem;
+      outline: none;
+    }
   }
   .wrap {
     position: relative;

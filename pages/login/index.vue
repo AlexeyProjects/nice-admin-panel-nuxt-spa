@@ -37,19 +37,16 @@ export default {
   setup(props, ctx) {
     const { store, $toast } = useContext()
     const router = useRouter()
-    console.log(router)
     const formData = ref({
       email: '',
       password: ''
     })
-    console.log(router)
     const loading = ref(false)
     const submit = async () => {
       const data = formData.value
       loading.value = true
       const response = await store.dispatch('login/login', data)
       loading.value = false
-      console.log(response)
     }
     return {
       formData,

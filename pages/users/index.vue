@@ -14,6 +14,7 @@
     :tableOptions="tableOptions"
     @rowClick="editRow"
     @changePage="changePage"
+    @searchInput="searchInput"
     />
   </div>
 </template>
@@ -75,18 +76,21 @@ export default {
       })
     }
     const changePage = (newPage) => {
-      console.log(newPage)
       paramsSearch.value.page = newPage
       getSections()
     }
     const getSections = async () => {
       loading.value = true
-      console.log(paramsSearch.value)
       const data = await store.dispatch('users/getUsers', paramsSearch.value)
       sections.value = data
       tableOptions.value.dataTable = sections.value.data
       tableOptions.value.totalRows = sections.value.total
       loading.value = false
+    }
+    const searchInput = async (searchParams) => {
+      loading.value = true
+      paramsSearch.value.searchField = searchParams
+      getSections()
     }
     onMounted(() => {
       getSections()
@@ -100,7 +104,8 @@ export default {
       loading,
       editRow,
       paramsSearch,
-      changePage
+      changePage,
+      searchInput
     }
   }
 }

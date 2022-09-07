@@ -82,12 +82,14 @@ export default {
     
   },
   methods: {
-    deleteFile(file, index) {
+    async deleteFile(file, index) {
       if (confirm("Удалить файл?")) {
-        this.$axios.get(`https://test.itisthenice.com/api/v1/delete-file/${file.id}`)
+        this.$emit('loading', true)
+        await this.$axios.get(`https://test.itisthenice.com/api/v1/delete-file/${file.id}`)
         .then(() => {
             this.files.splice(index, 1);
             this.$emit('deleteFiles', index)
+            this.$emit('loading', false)
         })
         
       }
@@ -107,6 +109,7 @@ export default {
       
     },
     async sendFile(formData) {
+        this.$emit('loading', true)
         const response = await this.$axios
         .post("https://test.itisthenice.com/api/v1/upload-file", formData, {
             headers: { "Content-Type": "multipart/form-data" },
@@ -115,6 +118,7 @@ export default {
           this.files.push({ id: response.data.data.id, src: response.data.data.src, title: response.data.data.title, type: response.data.data.type });
           this.$emit('changeFiles', this.files)
           console.log('1')
+          this.$emit('loading', false)
         })
         
     },

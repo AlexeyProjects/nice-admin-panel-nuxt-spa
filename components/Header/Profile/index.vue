@@ -1,10 +1,9 @@
 <template>
-  <div :class="$style.leftBar">
+  <div :class="$style.profile">
     <div class="">
-      <logotype/>
-      <HeaderNavbar/>
+      <p class="mb-15">{{ getUserInfo.email }}</p>
+      <button @click.prevent="logout" class="btn">Выход</button>
     </div>
-    <HeaderProfile></HeaderProfile>
   </div>
 </template>
 

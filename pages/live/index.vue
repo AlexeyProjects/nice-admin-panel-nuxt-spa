@@ -1,62 +1,70 @@
 <template>
-  <div class="">
-    <div :class="$style.header">
-      <div :class="$style.title">
-        Эфир
+  <div class="wrap wrap-loading">
+    <UILoading
+    v-if="loading"
+    />
+    <div v-show="!loading" class="">
+      <div :class="$style.header" class="mb-20">
+        <div :class="$style.title">
+          Эфир
+        </div>
+        <div :class="$style.panel">
+          <button class="btn">
+            Включить эфир
+          </button>
+        </div>
       </div>
-      <div :class="$style.panel">
-
+      <div :class="$style.content" class="content">
+        <div class="mb-15">
+          <div class="mb-15">Добавить</div>
+          <div class="">
+            <div class="input image">
+              <span>Фотографии</span>
+              <vue-upload-multiple-image
+              :maxImage="1"
+              class="mb-15"
+              :showEdit="false"
+              markIsPrimaryText=""
+              dropText="Перетащите картинку сюда"
+              dragText="Перетащите картинку сюда"
+              browseText="Выбрать картинку"
+              :showPrimary="false"
+              @upload-success="uploadImageSuccess"
+              @before-remove="beforeRemove"
+              :data-images="imagesPreview"
+              ></vue-upload-multiple-image>
+            </div>
+            <inputFile @loading="loadingFile" @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-15"></inputFile>
+          </div>
+          <button @click.prevent="submit" class="btn">
+            Добавить
+          </button>
+        </div>
+        <div :class="$style.list">
+          <div :class="$style.track" class="mb-15" :key="index" v-for="(item, index) in sections">
+            <div :class="$style.wraper">
+              <span class="mr-15">
+                ID:{{ item.id }}
+              </span>    
+              <img class="mr-15" :src="`https://test.itisthenice.com/${item.wrap.src}`" alt="">
+            </div>
+            <div :class="$style.audio">
+              <p class="mb-10">{{ item.audio.title }}</p>
+              <audio controls :src="`https://test.itisthenice.com/${item.audio.src}`"></audio>
+            </div>
+          </div>
+          <paginate
+          :page-count="pageCount"
+          :click-handler="changePage"
+          :prev-text="'Пред'"
+          :next-text="'След'"
+          :container-class="'pagination'"
+          ></paginate>
+        </div>
+        
       </div>
     </div>
-    <div :class="$style.content" class="content">
-      <div class="mb-15">
-        <div class="mb-15">Добавить</div>
-        <div class="">
-          <div class="input image">
-            <span>Фотографии</span>
-            <vue-upload-multiple-image
-            :maxImage="1"
-            class="mb-15"
-            :showEdit="false"
-            markIsPrimaryText=""
-            dropText="Перетащите картинку сюда"
-            dragText="Перетащите картинку сюда"
-            browseText="Выбрать картинку"
-            :showPrimary="false"
-            @upload-success="uploadImageSuccess"
-            @before-remove="beforeRemove"
-            :data-images="imagesPreview"
-            ></vue-upload-multiple-image>
-          </div>
-          <inputFile @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-15"></inputFile>
-        </div>
-        <button @click.prevent="submit" class="btn">
-          Добавить
-        </button>
-      </div>
-      <div :class="$style.list">
-        <div :class="$style.track" class="mb-15" :key="index" v-for="(item, index) in sections">
-          <div :class="$style.wraper">
-            <span class="mr-15">
-              ID:{{ item.id }}
-            </span>    
-            <img class="mr-15" :src="`https://test.itisthenice.com/${item.wrap.src}`" alt="">
-          </div>
-          <div :class="$style.audio">
-            <p class="mb-10">{{ item.audio.title }}</p>
-            <audio controls :src="`https://test.itisthenice.com/${item.audio.src}`"></audio>
-          </div>
-        </div>
-        <paginate
-        :page-count="pageCount"
-        :click-handler="changePage"
-        :prev-text="'Пред'"
-        :next-text="'След'"
-        :container-class="'pagination'"
-        ></paginate>
-      </div>
-      
-    </div>
+    
   </div>
 </template>
 
@@ -124,7 +132,6 @@ export default {
       const data = await store.dispatch('live/getMusic', paramsSearch.value)
       sections.value = data
       tableOptions.value.dataTable = sections.value.data
-      console.log(tableOptions)
       loading.value = false
     }
     const pageCount = computed(() => {
@@ -132,7 +139,6 @@ export default {
       return 2
     })
     const changePage = (page) => {
-      console.log(page)
     }
     const dataURLtoFile = (dataurl, filename) => {
         var arr = dataurl.split(','),
@@ -175,7 +181,6 @@ export default {
             basketFiles.push(res.id)
           })
         }
-        console.log('Done!');
       }
       await processArray(imagesPreview.value)
       audioBasket.value.forEach(item => {
@@ -188,11 +193,16 @@ export default {
       await store.dispatch(`live/loadTrack`, formData)
       loading.value = false
     }
+    const loadingFile = (state) => {
+      console.log(state)
+      loading.value = state
+    }
     onMounted(() => {
       getSections()
     })
 
     return {
+      loadingFile,
       columns,
       getSections,
       sections,
@@ -216,6 +226,10 @@ export default {
 </script>
 
 <style lang="scss" module>
+  .header {
+    display: flex;
+    justify-content: space-between;
+  }
   .title {
     font-size: 2.4rem;
     margin-bottom: 1rem;

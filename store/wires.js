@@ -36,6 +36,15 @@ export const actions = {
       console.log(e)
     }
   },
+  async deletePairs ({ commit }, params) {
+    try {
+      const res = await this.$axios.post('delInterfaceOrPair', params)
+      //commit('setUsers', res.data.data)
+      return res.data
+    } catch (e) {
+      console.log(e)
+    }
+  },
 }
 
 

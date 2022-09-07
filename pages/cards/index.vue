@@ -20,6 +20,7 @@
     :curPage="paramsSearch.curPage"
     @rowClick="editRow"
     @changePage="changePage"
+    @searchInput="searchInput"
     />
     
     
@@ -81,7 +82,6 @@ export default {
       })
     }
     const changePage = (newPage) => {
-      console.log(newPage)
       paramsSearch.value.page = newPage
       getSections()
     }
@@ -89,10 +89,14 @@ export default {
       loading.value = true
       const data = await store.dispatch('cards/getCards', paramsSearch.value)
       sections.value = data
-      console.log(sections.value)
       tableOptions.value.dataTable = sections.value.data
       tableOptions.value.totalRows = sections.value.total
       loading.value = false
+    }
+    const searchInput = async (searchParams) => {
+      loading.value = true
+      paramsSearch.value.searchField = searchParams
+      getSections()
     }
     onMounted(() => {
       getSections()
@@ -106,7 +110,8 @@ export default {
       loading,
       editRow,
       paramsSearch,
-      changePage
+      changePage,
+      searchInput
     }
   }
 }

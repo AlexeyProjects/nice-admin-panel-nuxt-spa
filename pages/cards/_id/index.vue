@@ -6,123 +6,156 @@
     <div
     v-show="!loading"
     class="">
-      <form action="">
-        <div class="main">
-          <div class="head mb-15">
-            <button @click.prevent="$router.push('/cards')" class="btn back">
-              Назад
-            </button>
-            <div :class="$style.title">
-              {{ item.title }}
-            </div>
+    <form action="">
+      <div class="main">
+        <div class="head mb-15">
+          <button @click.prevent="$router.push('/cards')" class="btn back">
+            Назад
+          </button>
+          <div :class="$style.title">
+            {{ item.title }}
           </div>
-          
-          <div class="input">
-            <label for="">
-              <span class="label">
-                Название
-              </span>
-              <input v-model="formData.title" type="text">
-            </label>
+        </div>
+        
+        <div class="input">
+          <label for="">
+            <span class="label">
+              Название
+            </span>
+            <input v-model="formData.title" type="text">
+          </label>
+          <div v-if="showTitleValidate" class="errors">
+            {{ v$.title.$errors[0].$message }}
           </div>
-          <div class="input checkbox">
-            <label>
-              <span class="label">
-                Отображать на главной
-              </span>
-              <input v-model="formData.show_in_main" type="checkbox">
-            </label>
+        </div>
+        <div class="input checkbox">
+          <label>
+            <span class="label">
+              Отображать на главной
+            </span>
+            <input v-model="formData.show_in_main" type="checkbox">
+          </label>
+        </div>
+        <div v-if="showDate" class="input datepicker">
+          <label>
+            <span class="label">
+              Дата и время
+            </span>
+            <input type="datetime-local" :min="new Date().toLocaleDateString('en-ca')+'T08:00'" ref="datePicker" class="date-picker-mm form-control" v-model="formData.date_event" id="date_event" name="date_event" value="">
+          </label>
+          <div v-if="v$.date_event.$errors[0]" class="errors validation-error">
+            {{ v$.date_event.$errors[0].$message }}
           </div>
-          <div v-if="showDate" class="input datepicker">
-            <label>
-              <span class="label">
-                Дата и время
-              </span>
-              <input type="datetime-local" class="form-control" v-model="formData.date_event" id="date_event" name="date_event" value="">
-            </label>
-          </div>
-          <div class="input checkbox">
-            <label>
-              <span class="label">
-                Является товаром
-              </span>
-              <input v-model="isProduct" type="checkbox">
-            </label>
-          </div>
-          <div v-if="isProduct" class="input">
-            <label>
-              <span class="label">
-                Количество
-              </span>
-              <input v-model="formData.count" type="text">
-            </label>
-          </div>
-          <div v-if="isProduct" class="input">
-            <label>
-              <span class="label">
-                Цена
-              </span>
-              <input v-model="formData.price" type="text">
-            </label>
-          </div>
+        </div>
+        
+        <div class="input checkbox">
+          <label>
+            <span class="label">
+              Является товаром
+            </span>
+            <input v-model="isProduct" type="checkbox">
+          </label>
+        </div>
+        <div v-if="isProduct" class="input">
+          <label>
+            <span class="label">
+              Количество
+            </span>
+            <input v-model="formData.count" type="text">
+          </label>
+        </div>
+        <div v-if="isProduct" class="input">
+          <label>
+            <span class="label">
+              Цена
+            </span>
+            <input v-model="formData.price" type="text">
+          </label>
+        </div>
 
-          <!-- <div class="input image">
-            <label>
-              <span class="label">
-                
-              </span>
-              <input multiple @change="changeImages" type="file">
-            </label>
-          </div> -->
-          <div v-if="item.section_id !== 2" class="input image">
-            <span>Фотографии</span>
-            <vue-upload-multiple-image
-            :maxImage="10"
-            class="mb-15"
-            :showEdit="false"
-            markIsPrimaryText=""
-            markIsPrimaryText=""
-            dropText="Перетащите картинку сюда"
-            dragText="Перетащите картинку сюда"
-            browseText="Выбрать картинку"
-            :showPrimary="false"
-            @upload-success="uploadImageSuccess"
-            @before-remove="beforeRemove"
-            :data-images="imagesPreview"
-            ></vue-upload-multiple-image>
-          </div>
-
-          <multiselect 
+        <!-- <div class="input image">
+          <label>
+            <span class="label">
+              
+            </span>
+            <input multiple @change="changeImages" type="file">
+          </label>
+        </div> -->
+        <div v-if="item.section_id !== 2" class="input image">
+          <span>Фотографии</span>
+          <vue-upload-multiple-image
+          :maxImage="10"
           class="mb-15"
+          :showEdit="false"
+          markIsPrimaryText=""
+          markIsPrimaryText=""
+          dropText="Перетащите картинку сюда"
+          dragText="Перетащите картинку сюда"
+          browseText="Выбрать картинку"
+          :showPrimary="false"
+          @upload-success="uploadImageSuccess"
+          @before-remove="beforeRemove"
+          :data-images="imagesPreview"
+          ></vue-upload-multiple-image>
+          <!-- <div v-if="v$.imagesPreview.$errors[0]" class="errors validation-error">
+            {{ v$.imagesPreview.$errors[0].$message }}
+          </div> -->
+        </div>
+        <div class="mb-15">
+          <span class="mb-15">
+            Теги
+          </span>
+          <multiselect 
+          class="mt-15 mb-5"
           v-model="formData.tags" 
           :options="tags" 
           label="name"
           track-by="id"
           :multiple="true"/>
-
-          <inputFile v-if="showMusic" @changeFiles="changeAudio" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-15"></inputFile>
-          <inputFile v-if="showVideo" @changeFiles="changeVideo" @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-15"></inputFile>
-          <!-- <editor/> -->
-
-          <div class="editor">
-            <VueEditor class="editor-container mb-15" :editorToolbar="editorToolbar" v-model="formData.text" />
-            <p>Предосмотр</p>
-            <div class="editor-preview" v-html="formData.text">
-          </div>
-          
+          <!-- <div v-if="v$.tags.$errors[0]" class="errors validation-error">
+            {{ v$.tags.$errors[0].$message }}
+          </div> -->
+        </div>
+        
+        <div class="mb-15" v-if="showMusic" >
+          <inputFile  @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-5"></inputFile>
+          <div v-if="v$.audioBasket.$errors[0]" class="errors validation-error">
+            {{ v$.audioBasket.$errors[0].$message }}
           </div>
         </div>
+        <div class="mb-15" v-if="showVideo" >
+          <inputFile  @changeFiles="changeVideo" accept="video/*"  @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-5"></inputFile>
+          <div v-if="v$.videoBasket.$errors[0]" class="errors validation-error">
+            {{ v$.videoBasket.$errors[0].$message }}
+          </div>
+        </div>
+        
+        <!-- <editor/> -->
 
-        <button @click.prevent="submit" :class="$style.btn_submit" class="submit btn">
-          Сохранить
-        </button>
-      </form>
+        <div class="editor">
+          <span class="mb-10">Описание</span>
+          <!-- <div v-if="v$.text.$errors[0]" class="mb-10 errors validation-error">
+            {{ v$.text.$errors[0].$message }}
+          </div> -->
+          <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.text" />
+          <div class="editor-preview" v-html="formData.text">
+        </div>
+        
+        </div>
+      </div>
+
+      <button @click.prevent="submit" :class="$style.btn_submit" class="submit btn">
+        Сохранить
+      </button>
+    </form>
     </div>
 
   </div>
 </template>
 
 <script>
+import { useVuelidate } from '@vuelidate/core'
+import { required, minLength, helpers } from '@vuelidate/validators'
 import { ref, reactive, onMounted, useContext, computed, nextTick } from '@nuxtjs/composition-api';
 import VueUploadMultipleImage from 'vue-upload-multiple-image';
 import Multiselect from 'vue-multiselect'
@@ -137,14 +170,47 @@ export default {
   setup() {
     const { store, route, $toast, $axios } = useContext()
     const loading = ref(false)
+    const item = ref({
+      title: '',
+      text: '',
+      fileIds: [],
+      item_type_id: 1,
+      price: 0,
+      count: 0,
+      imagesPreview: [],
+      audioBasket: [],
+      videoBasket: [],
+      date_event: null,
+      section_id: null,
+      tags: [],
+      show_in_main: false
+    })
     const formData = ref({
-
+      ...item.value
+    })
+    var v$ = ref({})
+    const rules = reactive({
+      title: { required: helpers.withMessage('Введите данные', required) },
+      tags: { 
+        required: helpers.withMessage('Выберите минимум 1 тег', required),
+        minLength: minLength(1),
+        $each: {
+          required
+        }
+      },
+      imagesPreview: { 
+        required: helpers.withMessage('Выберите минимум 1 картинку', required),
+        minLength: minLength(1),
+        $each: {
+          required
+        }
+      },
+      text: { required: helpers.withMessage('Введите данные', required) },
     })
     const isProduct = ref(false)
     const tags = ref([])
     const valueMultiSelect = ref([])
     const optionsMultiselect = ref([])
-    const item = ref({})
     const changedFIle = ref({})
     const imageUploaded = ref([])
     const imagesPreview = ref([])
@@ -153,6 +219,7 @@ export default {
     const audioBasket = ref([])
     const getSections = async () => {
       loading.value = true
+      getTags()
       const data = await store.dispatch(`cards/getCard`, route.value.params.id)
       item.value = data
       optionsMultiselect.value = item.value.tags
@@ -162,6 +229,9 @@ export default {
       imagesLoadForPreview()
       filterVideo()
       filterAudio()
+      initRules()
+      v$.value = useVuelidate(rules, formData.value)
+      console.log(v$.value)
       loading.value = false
     }
     const editorToolbar = ref(
@@ -191,10 +261,9 @@ export default {
       
     }
     const changeImages = (event) => {
-      console.log(event.target.files)
+
     }
     const getTags = async () => {
-      loading.value = true
       const data = await store.dispatch('tags/getTags', {
         entity: 'tags',
         searchField: '',
@@ -202,7 +271,6 @@ export default {
         count: 9999
       })
       tags.value = data.data
-      loading.value = false
     }
     const formatedImage = async (file) => {
      imagesPreview.value.forEach( async (item) => {
@@ -215,6 +283,11 @@ export default {
      })
     }
     const submit = async () => {
+      v$.value.$touch()
+      if (v$.value.$invalid) {
+        console.log(v$.value)
+        return
+      }
       loading.value = true
       var basketFiles = []
       async function processArray(array) {
@@ -230,7 +303,6 @@ export default {
             })
           }
         }
-        console.log('Done!');
       }
       await processArray(imagesPreview.value)
       audioBasket.value.forEach(item => {
@@ -337,17 +409,19 @@ export default {
       audioBasket.value = item.value.files.filter(file => file.file_type_id === 3);
     }
     const deleteAudio = (index) => {
+      formData.value.audioBasket.splice(index,1)
       audioBasket.value.splice(index,1)
     }
     const deleteVideo = (index) => {
+      formData.value.videoBasket.splice(index,1)
       videoBasket.value.splice(index,1)
     }
     const changeAudio = (fileList) => {
-      console.log(fileList)
+      formData.value.audioBasket = fileList
       audioBasket.value = fileList
     }
     const changeVideo = (fileList) => {
-      console.log(fileList)
+      formData.value.videoBasket = fileList
       videoBasket.value = fileList
     }
 
@@ -362,12 +436,48 @@ export default {
     const showDate = computed(() => {
       return item.value.section_id === 9
     })
-
+    const loadingFile = (state) => {
+      loading.value = state
+    }
+    const initRules = () => {
+      console.log(item.value.section_id)
+      if (showMusic.value) {
+        console.log('is music')
+        rules.audioBasket = {
+          required: helpers.withMessage('Выберите минимум 1 аудио', required),
+          minLength: minLength(1),
+          $each: {
+            required
+          }
+        }
+      } 
+      if ( showVideo.value ) {
+        rules.videoBasket = {
+          required: helpers.withMessage('Выберите минимум 1 видео', required),
+          minLength: minLength(1),
+          $each: {
+            required
+          }
+        }
+        delete rules.imagesPreview
+      } 
+      if (showDate.value) {
+        console.log('is date')
+        rules.date_event = {
+          required: helpers.withMessage('Выберите дату', required)
+        }
+        console.log(rules)
+      }
+      
+    }
+    const showTitleValidate = computed(() => {
+      return v$.value?.title?.$errors[0]
+    })
     onMounted(() => {
       getSections()
-      getTags()
     })
     return {
+      loadingFile,
       formData,
       getSections,
       item,
@@ -397,7 +507,10 @@ export default {
       videoBasket,
       deleteAudio,
       deleteVideo,
-      showDate
+      showDate,
+      initRules,
+      v$,
+      showTitleValidate
       // configEditor
     }
   }

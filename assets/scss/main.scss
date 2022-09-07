@@ -12,6 +12,10 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
+main {
+  display: flex;
+  flex-direction: column;
+}
 .app {
   margin-left: $leftBarWidth;
   min-height: 100vh;
@@ -37,6 +41,9 @@ a {
 .default-link {
   color: #000;
 }
+.validation-error {
+  color: rgb(211, 29, 29);
+}
 .input {
   display: flex;
   flex-direction: column;
@@ -44,6 +51,9 @@ a {
   margin-bottom: 1rem;
   span {
     margin-bottom: .5rem;
+  }
+  .errors {
+    color: rgb(211, 29, 29);
   }
   &.checkbox {
     flex-direction: row;
@@ -128,6 +138,10 @@ a {
   font-size: 1.6rem;
   border-radius: 0.4rem;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  &.disable {
+    pointer-events: none;
+    background-color: rgba($color: #000000, $alpha: .3);
+  }
   &.red {
     background-color: rgb(181, 60, 60);
   }

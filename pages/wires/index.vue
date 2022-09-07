@@ -133,7 +133,6 @@ export default {
       if (!clicked.choosed) {
         dataTableLeft.value.forEach((wire, index) => {
           if (clicked !== wire) {
-            console.log(wire)
             wire.disable = true
             wire.choosed = false
           }
@@ -162,7 +161,6 @@ export default {
       if (!clicked.choosed) {
         dataTableRight.value.forEach((wire, index) => {
           if (clicked !== wire) {
-            console.log(wire)
             // wire.disable = true
             // wire.choosed = false
           }

@@ -129,7 +129,6 @@ export default {
       perPage: 30
     })
     const editRow = (item) => {
-      console.log(router)
       router.push({
         path: `/cards/${item.row.id}`
       })
@@ -148,7 +147,6 @@ export default {
       user.value = userData.data.find(item => item.id == data.user_id)
       tableOptions.value.dataTable = data.basket.cards
       // statuses.value = Object.assign({}, resStatuses);
-      console.log(statuses.value)
       statuses.value = [
         ...resStatuses
       ]
