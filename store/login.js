@@ -41,7 +41,7 @@ export const actions = {
     try {
       const res = await this.$axios.get('verifyToken')
       if (res.status === 200) {
-        commit('setUser',res.data.data[0])
+        commit('setUser',res.data.data.user)
       }
       return res
     } catch (e) {

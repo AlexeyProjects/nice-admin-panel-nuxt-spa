@@ -11,10 +11,8 @@ export const mutations = {
 export const actions = {
   async loadTrack ({ commit }, params) {
     try {
-      const res = await this.$axios.post('upload-file', params, {
-        headers: { "Content-Type": "multipart/form-data" }
-      })
-      this.$toast.success('Информация сохранена', { position: 'bottom-center', icon: false, duration: 2000 })
+      const res = await this.$axios.post('addOrEditMusic', params )
+      this.$toast.success('Аудиотрек добавлен', { position: 'bottom-center', icon: false, duration: 2000 })
       return res.data.data
     } catch (e) {
       console.log(e.message)

@@ -18,6 +18,17 @@
         <div class="mb-15">
           <div class="mb-15">Добавить</div>
           <div class="">
+            <div class="input">
+              <label for="">
+                <span class="label">
+                  Название
+                </span>
+                <input v-model="title" type="text">
+              </label>
+              <!-- <div v-if="showTitleValidate" class="errors">
+                {{ v$.title.$errors[0].$message }}
+              </div> -->
+            </div>
             <div class="input image">
               <span>Фотографии</span>
               <vue-upload-multiple-image
@@ -49,11 +60,12 @@
               <img class="mr-15" :src="`https://test.itisthenice.com/${item.wrap.src}`" alt="">
             </div>
             <div :class="$style.audio">
-              <p class="mb-10">{{ item.audio.title }}</p>
+              <p class="mb-10">{{ item.title }}</p>
               <audio controls :src="`https://test.itisthenice.com/${item.audio.src}`"></audio>
             </div>
           </div>
           <paginate
+          v-if="sections.length > 10"
           :page-count="pageCount"
           :click-handler="changePage"
           :prev-text="'Пред'"
@@ -88,6 +100,7 @@ export default {
       page: 1,
       count: 9999
     })
+    const title = ref('')
     const columns = ref([
       {
         label: 'Название',
@@ -182,15 +195,16 @@ export default {
           })
         }
       }
-      await processArray(imagesPreview.value)
-      audioBasket.value.forEach(item => {
-        basketFiles.push(item.id)
-      })
-      var formData = new FormData();
-      formData.append('wrap',imagesPreview.value[0])
-      formData.append('file',audioBasket.value[0])
-      formData.append('dir','broadcast')
+      const image = await processArray(imagesPreview.value)
+      console.log(basketFiles)
+      const formData = {
+        mode: 'add',
+        wrap_id: basketFiles[0],
+        audio_id: audioBasket.value[0].id,
+        title: title.value,
+      }
       await store.dispatch(`live/loadTrack`, formData)
+      getSections()
       loading.value = false
     }
     const loadingFile = (state) => {
@@ -219,7 +233,8 @@ export default {
       uploadImageSuccess,
       audioBasket,
       pageCount,
-      changePage
+      changePage,
+      title
     }
   }
 }

@@ -5,7 +5,9 @@
         Теги
       </div>
       <div :class="$style.panel">
-
+        <nuxt-link class="btn" to="/tags/add">
+          Добавить
+        </nuxt-link>
       </div>
     </div>
     <TableDefault
@@ -57,7 +59,7 @@ export default {
     const sections = ref([])
     const editRow = (params) => {
       router.push({
-        path: `/users/${params.row.id}`,
+        path: `/tags/${params.row.id}`,
         query: { title: params.row.title }
       })
     }
@@ -99,5 +101,10 @@ export default {
   .wrap {
     position: relative;
     flex-grow: 1;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 </style>

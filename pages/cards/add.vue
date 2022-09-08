@@ -207,7 +207,7 @@ export default {
         }
     )
     const rules = reactive({
-      title: { required: helpers.withMessage('Введите данные', required) },
+      title: { required: helpers.withMessage('Введите заголовок', required) },
       tags: { 
         required: helpers.withMessage('Выберите минимум 1 тег', required),
         minLength: minLength(1),
@@ -222,7 +222,13 @@ export default {
           required
         }
       },
-      text: { required: helpers.withMessage('Введите данные', required) },
+      text: { 
+        required: helpers.withMessage('Введите описание', required),
+        minLength: helpers.withMessage(
+          ({}) => `Введите минимум 50 симврорв`,
+          minLength(50)
+        )
+      },
     })
     const changedFIle = ref({})
     const imageUploaded = ref([])

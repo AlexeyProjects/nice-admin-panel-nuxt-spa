@@ -88,7 +88,8 @@ export default {
         await this.$axios.get(`https://test.itisthenice.com/api/v1/delete-file/${file.id}`)
         .then(() => {
             this.files.splice(index, 1);
-            this.$emit('deleteFiles', index)
+            // this.$emit('deleteFiles', index)
+            this.$emit('changeFiles', this.files)
             this.$emit('loading', false)
         })
         
@@ -123,11 +124,12 @@ export default {
         
     },
   },
-  mounted() {
-    this.filesInput.forEach((file) => {
-      this.files.push(file);
-    });
-  },
+  // mounted() {
+  //   this.filesInput.forEach((file) => {
+  //     console.log(file)
+  //     this.files.push(file);
+  //   });
+  // },
   beforeMount() {
     if (this.filesInput != undefined && this.filesInput != null) {
       this.filesInput.forEach((file) => {

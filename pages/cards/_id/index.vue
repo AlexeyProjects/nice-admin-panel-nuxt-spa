@@ -97,9 +97,9 @@
           @before-remove="beforeRemove"
           :data-images="imagesPreview"
           ></vue-upload-multiple-image>
-          <!-- <div v-if="v$.imagesPreview.$errors[0]" class="errors validation-error">
+          <div v-if="showImagesValidate" class="errors validation-error">
             {{ v$.imagesPreview.$errors[0].$message }}
-          </div> -->
+          </div>
         </div>
         <div class="mb-15">
           <span class="mb-15">
@@ -112,9 +112,9 @@
           label="name"
           track-by="id"
           :multiple="true"/>
-          <!-- <div v-if="v$.tags.$errors[0]" class="errors validation-error">
+          <div v-if="showTagsValidate" class="errors validation-error">
             {{ v$.tags.$errors[0].$message }}
-          </div> -->
+          </div>
         </div>
         
         <div class="mb-15" v-if="showMusic" >
@@ -134,9 +134,9 @@
 
         <div class="editor">
           <span class="mb-10">Описание</span>
-          <!-- <div v-if="v$.text.$errors[0]" class="mb-10 errors validation-error">
+          <div v-if="showEditorValidate" class="mb-10 errors validation-error">
             {{ v$.text.$errors[0].$message }}
-          </div> -->
+          </div>
           <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.text" />
           <div class="editor-preview" v-html="formData.text">
         </div>
@@ -156,7 +156,7 @@
 <script>
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, helpers } from '@vuelidate/validators'
-import { ref, reactive, onMounted, useContext, computed, nextTick } from '@nuxtjs/composition-api';
+import { ref, reactive, onMounted, watch,  useContext, computed, nextTick } from '@nuxtjs/composition-api';
 import VueUploadMultipleImage from 'vue-upload-multiple-image';
 import Multiselect from 'vue-multiselect'
 // import Editor from 'vue-editor-js/src/Editor.vue'
@@ -190,7 +190,7 @@ export default {
     })
     var v$ = ref({})
     const rules = reactive({
-      title: { required: helpers.withMessage('Введите данные', required) },
+      title: { required: helpers.withMessage('Введите заголовок', required) },
       tags: { 
         required: helpers.withMessage('Выберите минимум 1 тег', required),
         minLength: minLength(1),
@@ -205,7 +205,13 @@ export default {
           required
         }
       },
-      text: { required: helpers.withMessage('Введите данные', required) },
+      text: { 
+        required: helpers.withMessage('Введите описание', required),
+        minLength: helpers.withMessage(
+          ({}) => `Введите минимум 50 симврорв`,
+          minLength(50)
+        )
+      },
     })
     const isProduct = ref(false)
     const tags = ref([])
@@ -224,7 +230,10 @@ export default {
       item.value = data
       optionsMultiselect.value = item.value.tags
       formData.value = {
-        ...item.value
+        ...item.value,
+        audioBasket: [],
+        imagesPreview: [],
+        videoBasket: []
       }
       imagesLoadForPreview()
       filterVideo()
@@ -316,8 +325,12 @@ export default {
         basketTags.push(item.id)
       })
       if (!isProduct.value) {
-        formData.price = 0
-        formData.count = 0
+        formData.value.price = 0
+        formData.value.count = 0
+      }
+      if (formData.value.date_event !== null) {
+        console.log(formData)
+        formData.value.date_event = Math.floor(new Date(formData.value.date_event).getTime())
       }
       const data = {
         mode: "edit",
@@ -337,6 +350,7 @@ export default {
         }
       }
       const response = await store.dispatch(`cards/saveCard`, data)
+      formData.value.date_event = response[0].date_event
       loading.value = false
       // $toast.success('Информация сохранена', { position: 'bottom-center', icon: false, duration: 2000 })
     }
@@ -404,23 +418,26 @@ export default {
     }
     const filterVideo = () => {
       videoBasket.value = item.value.files.filter(file => file.file_type_id === 2);
+      formData.value.videoBasket = item.value.files.filter(file => file.file_type_id === 2);
     }
     const filterAudio = () => {
       audioBasket.value = item.value.files.filter(file => file.file_type_id === 3);
+      formData.value.audioBasket = item.value.files.filter(file => file.file_type_id === 3);
     }
     const deleteAudio = (index) => {
       formData.value.audioBasket.splice(index,1)
       audioBasket.value.splice(index,1)
     }
     const deleteVideo = (index) => {
-      formData.value.videoBasket.splice(index,1)
-      videoBasket.value.splice(index,1)
+      // formData.value.videoBasket.splice(index,1)
+      // videoBasket.value.splice(index,1)
     }
     const changeAudio = (fileList) => {
       formData.value.audioBasket = fileList
       audioBasket.value = fileList
     }
     const changeVideo = (fileList) => {
+      console.log(fileList)
       formData.value.videoBasket = fileList
       videoBasket.value = fileList
     }
@@ -473,6 +490,20 @@ export default {
     const showTitleValidate = computed(() => {
       return v$.value?.title?.$errors[0]
     })
+    const showEditorValidate = computed(() => {
+      return v$.value?.text?.$errors[0]
+    })
+    const showTagsValidate = computed(() => {
+      return v$.value?.tags?.$errors[0]
+    })
+    const showImagesValidate = computed(() => {
+      return v$.value?.imagesPreview?.$errors[0]
+    })
+    watch(() => imagesPreview.value, (first, second) => {
+      console.log(first, second)
+      formData.value.imagesPreview = first
+      console.log(formData.value.imagesPreview)
+    });
     onMounted(() => {
       getSections()
     })
@@ -510,7 +541,10 @@ export default {
       showDate,
       initRules,
       v$,
-      showTitleValidate
+      showTitleValidate,
+      showEditorValidate,
+      showTagsValidate,
+      showImagesValidate
       // configEditor
     }
   }

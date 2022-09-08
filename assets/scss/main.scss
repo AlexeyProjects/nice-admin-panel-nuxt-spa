@@ -28,6 +28,26 @@ main {
     margin-left: 4rem;
   }
 }
+.abilities {
+  background-color: #fff;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  width: 30rem;
+  label {
+    padding: .5rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    transition: .2s;
+    &:not(:last-child) {
+      border-bottom: 1px solid #ccc;
+    }
+    &:hover {
+      cursor: pointer;
+      background-color: #ccc;
+    }
+  }
+}
 .wrap-loading {
   position: relative;
 }

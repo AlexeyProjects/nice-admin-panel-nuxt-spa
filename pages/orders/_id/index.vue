@@ -33,7 +33,7 @@
                   {{ statusName }}
                 </div>
               </div>
-              <div class="row mb-15">
+              <div v-if="user" class="row mb-15">
                 <div class="">
                   Пользователь
                 </div>
@@ -144,6 +144,8 @@ export default {
       const data = await store.dispatch('orders/getOrder', route.value.params.id)
       const userData = await store.dispatch('users/getUsers', paramsSearchUsers.value)
       const resStatuses = await store.dispatch('statuses/getStatuses')
+      console.log(userData.data)
+      console.log(data)
       user.value = userData.data.find(item => item.id == data.user_id)
       tableOptions.value.dataTable = data.basket.cards
       // statuses.value = Object.assign({}, resStatuses);
@@ -266,6 +268,7 @@ export default {
   }
   .leftpanel {
     display: flex;
+    align-items: flex-start;
     margin-right: 2rem;
   }
   .rightpanel {
