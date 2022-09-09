@@ -61,7 +61,7 @@ export default {
     baseURL: `${'http://178.20.44.99:3060/api/v1/'}`,
   },
   router: {
-    base: './'
+    base: '/admin/'
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
