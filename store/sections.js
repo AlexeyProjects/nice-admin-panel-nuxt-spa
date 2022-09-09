@@ -19,6 +19,16 @@ export const actions = {
     }
   },
 
+  async getSection ({ commit }, params) {
+    try {
+      const res = await this.$axios.get(`getSectionById/${params}`)
+      commit('setSections', res.data.data)
+      return res.data.data
+    } catch (e) {
+      console.log(e)
+    }
+  },
+
   async editSection ({ commit }, params) {
     try {
       const data = await this.$axios.post('editSection', params)

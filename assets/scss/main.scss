@@ -28,6 +28,12 @@ main {
     margin-left: 4rem;
   }
 }
+audio {
+  height: 3rem;
+  &::-webkit-media-controls-panel {
+    background-color: #fff;
+  }
+}
 .abilities {
   background-color: #fff;
   border-radius: 5px;
@@ -64,6 +70,15 @@ a {
 .validation-error {
   color: rgb(211, 29, 29);
 }
+.quotes {
+  position: relative;
+  width: 30rem;
+  .add {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
 .input {
   display: flex;
   flex-direction: column;
@@ -74,6 +89,21 @@ a {
   }
   .errors {
     color: rgb(211, 29, 29);
+  }
+  &.list {
+    display: flex;
+    label {
+      flex-direction: row;
+      align-items: center;
+    }
+    svg {
+      width: 2rem;
+      height: 2rem;
+      margin-left: .5rem;
+      &:hover{
+        cursor: pointer;
+      }
+    }
   }
   &.checkbox {
     flex-direction: row;

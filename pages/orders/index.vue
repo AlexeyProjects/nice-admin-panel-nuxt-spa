@@ -13,6 +13,7 @@
     :loading="loading"
     :tableOptions="tableOptions"
     @rowClick="editRow"
+    @changePage="changePage"
     @searchInput="searchInput"
     />
   </div>
@@ -31,8 +32,12 @@ export default {
     const { store } = useContext()
     const router = useRouter()
     const paramsSearch = ref({
+      section_id: null,
+      searchField: '',
+      author_id: null,
+      tags: [],
       page: 1,
-      count: 9999
+      count: 30
     })
     const columns = ref([
       {
@@ -51,11 +56,6 @@ export default {
         type: 'text'
       },
       {
-        label: 'Пользователь',
-        field: 'user_id',
-        type: 'text'
-      },
-      {
         label: 'Сумма заказа',
         field: 'basket.cards_sum',
         type: 'text'
@@ -63,7 +63,12 @@ export default {
     ])
     const tableOptions = ref({
       columns: columns.value,
-      dataTable: []
+      dataTable: [],
+      paginationOptions: {
+        enable: true
+      },
+      totalRows: null,
+      perPage: 30
     })
 
     const loading = ref(false)
@@ -76,14 +81,26 @@ export default {
     }
     const getSections = async () => {
       loading.value = true
-      const data = await store.dispatch('orders/getOrders', paramsSearch.value)
-      sections.value = data
-      tableOptions.value.dataTable = sections.value.data
+      try {
+        const data = await store.dispatch('orders/getOrders', paramsSearch.value)
+        sections.value = data
+        tableOptions.value.dataTable = sections.value.data
+        tableOptions.value.totalRows = sections.value.total
+      }
+      catch (e){
+        console.log(e)
+      }
+      
+      
       loading.value = false
     }
     const searchInput = async (searchParams) => {
       loading.value = true
       paramsSearch.value.searchField = searchParams
+      getSections()
+    }
+    const changePage = (newPage) => {
+      paramsSearch.value.page = newPage
       getSections()
     }
     onMounted(() => {
@@ -98,7 +115,8 @@ export default {
       loading,
       editRow,
       paramsSearch,
-      searchInput
+      searchInput,
+      changePage
     }
   }
 }

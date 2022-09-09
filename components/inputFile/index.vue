@@ -65,7 +65,8 @@ export default {
     text: String,
     single: Boolean,
     inputName: String,
-    accept: String
+    accept: String,
+    dir: String
   },
   data() {
     return {
@@ -102,7 +103,7 @@ export default {
       for (var i = 0; i < event.target.files.length; i++) {
         var formData = new FormData();
         formData.append("file", event.target.files[i]);
-        formData.append("dir", 'uploaded-files');
+        formData.append("dir", this.dir);
         this.sendFile(formData)
         
       }

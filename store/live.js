@@ -12,7 +12,7 @@ export const actions = {
   async loadTrack ({ commit }, params) {
     try {
       const res = await this.$axios.post('addOrEditMusic', params )
-      this.$toast.success('Аудиотрек добавлен', { position: 'bottom-center', icon: false, duration: 2000 })
+      this.$toast.success(`Аудиотрек ${params.title} добавлен`, { position: 'bottom-center', icon: false, duration: 2000 })
       return res.data.data
     } catch (e) {
       console.log(e.message)
@@ -27,12 +27,14 @@ export const actions = {
       console.log(e)
     }
   },
-  async saveCard ({ commit }, params) {
+  async deleteTrack ({ commit }, params) {
     try {
-      const res = await this.$axios.post(`addOrEditCard`, params)
+      const res = await this.$axios.get(`deleteMusic/${params.id}`)
+      this.$toast.success(`Аудиотрек ${params.title} удален`, { position: 'bottom-center', icon: false, duration: 2000 })
       return res.data.data
     } catch (e) {
       console.log(e)
+      this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
     }
   },
 }

@@ -17,6 +17,7 @@
         :rows="$props.tableOptions.dataTable"
         :pagination-options="$props.tableOptions.paginationOptions"
         :totalRows="$props.tableOptions.totalRows"
+        @on-sort-change="onSortChange"
         mode="remote"
         />
         <paginate
@@ -73,6 +74,9 @@ export default {
     const changePage = (numPage) => {
       emit('changePage', numPage)
     }
+    const onSortChange = (params) => {
+      console.log(params)
+    }
     onMounted(() => {
       currentPage.value = props.curPage
     })
@@ -88,7 +92,8 @@ export default {
       changePage,
       pageCount,
       searchTerm,
-      searchInput
+      searchInput,
+      onSortChange
     }
 
   }

@@ -17,7 +17,7 @@
               </div>
             </div>
             <div :class="$style.rightpanel">
-              <button @click.prevent="delletePairs()" class="btn red">Удалить</button> 
+              <!-- <button @click.prevent="delletePairs()" class="btn red">Удалить</button>  -->
               <!-- <button class="btn red">Отменить</button> -->
               <!-- <button class="btn green">В обработку</button> -->
             </div>
@@ -31,7 +31,7 @@
               <div :class="$style.wires">
                 <div :class="[$style.row, item.disable ? $style.disable : '']" v-for="(item, index) in dataTableLeft">
                   <label>
-                    <input @click="chooseWire(item)" v-model="item.choosed" type="checkbox" name="" id="">
+                    <input readonly @click="chooseWire(item)" v-model="item.choosed" type="checkbox" name="" id="">
                     <div class="">
                       <div class="">
                         {{ item.name }}
@@ -42,7 +42,6 @@
                         {{ item.size }}
                       </div>
                     </div>
-                    {{ item.disable }}
                   </label>
                 </div>
               </div>
@@ -66,7 +65,6 @@
                         {{ item.size }}
                       </div>
                     </div>
-                    {{ item.disable }}
                   </label>
                 </div>
               </div>    
@@ -77,9 +75,6 @@
               <p> Входное соединение: {{ rule.name }} Выходное соединение: <span v-for="(item, index) in rule.pairs"> {{item.name}},</span></p>
             </div>
           </div> -->
-          <button v-if="choosedStartWire && choosedEndWire" @click.prevent="submit" class="btn">
-            Сохранить
-          </button>
           
         </div>
         <!-- <button @click.prevent="submit" class="btn">
@@ -132,7 +127,6 @@ export default {
     const initRules = () => {
       dataTableLeft.value.forEach(item => {
         if (item.id === +route.value.params.id){
-          console.log(item)
           item.choosed = true
         } else {
           item.disable = true
@@ -141,7 +135,6 @@ export default {
       dataTableRight.value.forEach(item => {
         rules.value.forEach(itemRule => {
           if (item.id === itemRule.id) {
-            console.log(item)
             item.choosed = true
           }
           
@@ -168,6 +161,9 @@ export default {
       return dataTableRight.value.find(wire => wire.choosed)
     })
     const chooseWire = (clicked) => {
+      router.push({
+        path: `/wires/${clicked.id}`
+      })
       if (!clicked.choosed) {
         dataTableLeft.value.forEach((wire, index) => {
           if (clicked !== wire) {
@@ -196,33 +192,52 @@ export default {
       })
     }
     const chooseSecondWire = (clicked) => {
-      if (!clicked.choosed) {
-        dataTableRight.value.forEach((wire, index) => {
-          if (clicked !== wire) {
-            // wire.disable = true
-            // wire.choosed = false
-          }
-          else {
-            clicked.disable = false
-          }
-        })
+      console.log(clicked)
+      if (clicked.choosed) {
+        deletePairs(clicked)
       }
       else {
-        dataTableRight.value.forEach((wire, index) => {
-          wire.disable = false
-        })
+        addPair(clicked)
       }
+      // if (!clicked.choosed) {
+      //   dataTableRight.value.forEach((wire, index) => {
+      //     if (clicked !== wire) {
+      //       // wire.disable = true
+      //       // wire.choosed = false
+      //     }
+      //     else {
+      //       clicked.disable = false
+      //     }
+      //   })
+      // }
+      // else {
+      //   dataTableRight.value.forEach((wire, index) => {
+      //     wire.disable = false
+      //   })
+      // }
     }
     const submit = async () => {
       await store.dispatch('')
     }
-    const delletePairs = async () => {
+    const addPair = async (item) => {
+      loading.value = true
+      const params = {
+        start: +route.value.params.id,
+        end: item.id
+      }
+      await store.dispatch('wires/addPair', params)
+      loading.value = false
+    }
+    const deletePairs = async (item) => {
+      console.log(item)
       loading.value = true
       const params = {
         entity: 'pair',
-        id: route.value.params.id
+        start: +route.value.params.id,
+        end: item.id
       }
-      await store.dispatch('wires/deletePairs', params)
+      const res = await store.dispatch('wires/deletePairs', params)
+      console.log(res)
       loading.value = false
     }
     const openWire = (id) => {
@@ -248,7 +263,8 @@ export default {
       rules,
       paramsSearch,
       initRules,
-      delletePairs
+      deletePairs,
+      addPair
     }
   }
 }
@@ -291,12 +307,18 @@ export default {
   }
   .wires {
     width: 30rem;
-    background-color: #fff;
     .row {
       padding: 1rem;
-      border-bottom: 1px solid #ccc;
+      
+      border-radius: 5px;
+      margin-bottom: 0.3rem;
+      background-color: #fff;
       &.disable {
         background-color: rgba(0,0,0,.2);
+        
+      }
+      &:hover{
+        cursor: pointer;
       }
       input:not(:checked) {
         ~ label {
@@ -306,6 +328,14 @@ export default {
       label {
         display: flex;
         justify-content: space-between;
+        &:hover{
+          cursor: pointer;
+        }
+        input {
+          &:hover{
+            cursor: pointer;
+          }
+        }
       }
     }
   }

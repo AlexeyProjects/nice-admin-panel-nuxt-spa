@@ -118,13 +118,13 @@
         </div>
         
         <div class="mb-15" v-if="showMusic" >
-          <inputFile  @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-5"></inputFile>
+          <inputFile dir="uploaded-files"  @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-5"></inputFile>
           <div v-if="v$.audioBasket.$errors[0]" class="errors validation-error">
             {{ v$.audioBasket.$errors[0].$message }}
           </div>
         </div>
         <div class="mb-15" v-if="showVideo" >
-          <inputFile  @changeFiles="changeVideo" accept="video/*"  @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-5"></inputFile>
+          <inputFile dir="uploaded-files"  @changeFiles="changeVideo" accept="video/*"  @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-5"></inputFile>
           <div v-if="v$.videoBasket.$errors[0]" class="errors validation-error">
             {{ v$.videoBasket.$errors[0].$message }}
           </div>
