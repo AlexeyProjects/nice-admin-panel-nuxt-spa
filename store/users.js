@@ -1,5 +1,6 @@
 export const state = () => ({
   users: [],
+  ability: []
 })
 
 export const mutations = {
@@ -39,7 +40,6 @@ export const actions = {
   async addAbility ({ commit }, params) {
     try {
       const res = await this.$axios.post(`addAbility`, params)
-      //commit('setUsers', res.data.data)
       this.$toast.success('Права изменены', { position: 'bottom-center', icon: false, duration: 2000 })
       return res.data
     } catch (e) {
@@ -50,7 +50,6 @@ export const actions = {
   async deleteAbility ({ commit }, params) {
     try {
       const res = await this.$axios.post(`deleteAbility`, params)
-      //commit('setUsers', res.data.data)
       this.$toast.success('Права изменены', { position: 'bottom-center', icon: false, duration: 2000 })
       return res.data
     } catch (e) {

@@ -72,7 +72,22 @@ a {
 }
 .quotes {
   position: relative;
+  flex-direction: column;
+  display: flex;
   width: 30rem;
+  label {
+    flex-direction: column;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    svg {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+  .list {
+    flex-direction: column;
+  }
   .add {
     position: absolute;
     top: 0;

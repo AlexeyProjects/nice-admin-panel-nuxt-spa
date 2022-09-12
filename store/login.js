@@ -1,7 +1,8 @@
 export const state = () => ({
   authorizated: false,
   token: '',
-  user: []
+  user: [],
+  ability: []
 })
 
 export const mutations = {
@@ -20,6 +21,9 @@ export const mutations = {
   setUser (state,data) {
     state.user = data
   },
+  setMyAbility (state, data) {
+    state.ability = data
+  }
 }
 
 export const actions = {
@@ -41,7 +45,9 @@ export const actions = {
     try {
       const res = await this.$axios.get('verifyToken')
       if (res.status === 200) {
+        console.log(res.data.data)
         commit('setUser',res.data.data.user)
+        // commit('abilities', res.data.data)
       }
       return res
     } catch (e) {
@@ -61,7 +67,16 @@ export const actions = {
     } catch (e) {
       this.$toast.error('Данные не корректны', { position: 'bottom-center', icon: false, duration: 2000 })
     }
-  }
+  },
+  async getMyAbility ({ commit }, params) {
+    try {
+      const res = await this.$axios.get(`getAbilities/${params}`)
+      commit('setMyAbility', res.data.data)
+      return res.data
+    } catch (e) {
+      console.log(e)
+    }
+  },
 }
 
 

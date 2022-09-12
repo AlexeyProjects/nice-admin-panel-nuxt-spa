@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink :to="{ path: $props.options.url, query: { title: $props.options.title } }" :class="$style.item">
+  <NuxtLink v-if="$props.options.show" :to="{ path: $props.options.url, query: { title: $props.options.title } }" :class="$style.item">
     
     <span>{{ $props.options.title }}</span>
     <components :is="$props.options.icon"/>

@@ -18,6 +18,7 @@
               </div>
             </div>
             <div :class="$style.rightpanel">
+              <button @click.prevent="deleteCard" class="btn red">Удалить</button>
             </div>
           </div>
           <div class="input">
@@ -141,7 +142,11 @@ export default {
   .seotitle {
     margin-bottom: 1rem;
   }
-  .leftpanel {
+  .head {
     display: flex;
+    justify-content: space-between;
+    .leftpanel {
+      display: flex;
+    }
   }
 </style>

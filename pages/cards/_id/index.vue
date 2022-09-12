@@ -8,12 +8,17 @@
     class="">
     <form action="">
       <div class="main">
-        <div class="head mb-15">
-          <button @click.prevent="$router.push('/cards')" class="btn back">
-            Назад
-          </button>
-          <div :class="$style.title">
-            {{ item.title }}
+        <div :class="$style.head" class="head mb-20">
+          <div :class="$style.leftpanel">
+            <button @click.prevent="$router.push('/cards')" class="btn back">
+              Назад
+            </button>
+            <div :class="$style.title">
+              {{ item.title }}
+            </div>
+          </div>
+          <div v-if="canDeleteCard" :class="$style.rightpanel">
+            <button @click.prevent="deleteCard" class="btn red">Удалить</button>
           </div>
         </div>
         
@@ -336,6 +341,7 @@ export default {
         mode: "edit",
         data: {
           id: formData.value.id,
+          author_id: formData.value.author_id,
           title: formData.value.title,
           text: formData.value.text,
           fileIds: basketFiles,
@@ -499,6 +505,14 @@ export default {
     const showImagesValidate = computed(() => {
       return v$.value?.imagesPreview?.$errors[0]
     })
+    const deleteCard = async () => {
+      loading.value = true
+      await store.dispatch('cards/deleteCard', +route.value.params.id)
+      loading.value = false
+    }
+    const canDeleteCard = computed (() => {
+      return store.state?.login?.ability?.find(ability => ability.id === 7)?.hasUser
+    })
     watch(() => imagesPreview.value, (first, second) => {
       console.log(first, second)
       formData.value.imagesPreview = first
@@ -544,7 +558,9 @@ export default {
       showTitleValidate,
       showEditorValidate,
       showTagsValidate,
-      showImagesValidate
+      showImagesValidate,
+      deleteCard,
+      canDeleteCard
       // configEditor
     }
   }
@@ -560,6 +576,13 @@ export default {
   }
   .btn_submit {
     margin-top: 5rem;
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    .leftpanel {
+      display: flex;
+    }
   }
 </style>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
