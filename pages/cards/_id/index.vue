@@ -253,6 +253,9 @@ export default {
       filterVideo()
       filterAudio()
       initRules()
+      if (formData.value.price > 0) {
+        isProduct.value = true
+      }
       v$.value = useVuelidate(rules, formData.value)
       console.log(v$.value)
       loading.value = false
