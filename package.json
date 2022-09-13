@@ -34,7 +34,7 @@
     "sass": "^1.54.5",
     "sass-loader": "^10.1.1"
   },
-  "browser":{
+  "browser": {
     "child_process": false
-  }  
+  }
 }
