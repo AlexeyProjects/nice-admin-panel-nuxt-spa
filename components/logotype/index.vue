@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.logotype">
-    <img src="/logo.png" alt="">
+    <img src="/admin/logo.png" alt="">
   </div>
 </template>
 
