@@ -9,8 +9,12 @@
           Эфир
         </div>
         <div :class="$style.panel">
-          <button class="btn">
-            Включить эфир
+          <div class="mr-10">
+            Статус: {{ statusLive }}
+            <!-- Статус: Включен -->
+          </div>
+          <button @click.prevent="changeStatus" class="btn">
+            {{ statusLive === 'Включен' ? 'Выключить' : 'Включить' }}
           </button>
         </div>
       </div>
@@ -106,6 +110,7 @@ export default {
       page: 1,
       count: 9999
     })
+    const statusLive = ref('')
     const currentEdit = ref(null)
     const mode = ref('add')
     const formData = reactive({})
@@ -261,8 +266,38 @@ export default {
       audioBasket.value = []
       currentEdit.value = null
     }
+    const changeStatus = async () => {
+      loading.value = true
+      const params = {
+          signal: ""
+        }
+      if ( statusLive.value === 'Включен' ) {
+        params.signal = 'stop'
+      } else {
+        params.signal = 'start'
+      }
+      await store.dispatch('live/changeStatus', params)
+      await getStatus()
+      loading.value = false
+    }
+    const getStatus = async () => {
+      loading.value = true
+      const params = {
+        signal: "status"
+      }
+      loading.value = false
+      const status = await store.dispatch('live/getStatus', params)
+      console.log(status)
+      if (status) {
+        statusLive.value = 'Включен'
+      } else {
+        statusLive.value = 'Выключен'
+      }
+      
+    }
     onMounted(() => {
       getSections()
+      getStatus()
     })
 
     return {
@@ -290,7 +325,10 @@ export default {
       deleteTrack,
       editTrack,
       rejectEdit,
-      currentEdit
+      currentEdit,
+      statusLive,
+      changeStatus,
+      getStatus
     }
   }
 }
@@ -308,6 +346,10 @@ export default {
   .wrap {
     position: relative;
     flex-grow: 1;
+  }
+  .panel {
+    display: flex;
+    align-items: center;
   }
   .content {
     display: flex;

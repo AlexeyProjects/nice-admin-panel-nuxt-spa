@@ -38,12 +38,14 @@
               <input v-model="formData.show_in_main" type="checkbox">
             </label>
           </div>
+          
           <div v-if="showDate" class="input datepicker">
             <label>
               <span class="label">
                 Дата и время
               </span>
-              <input type="datetime-local" :min="new Date().toLocaleDateString('en-ca')+'T08:00'" ref="datePicker" class="date-picker-mm form-control" v-model="formData.date_event" id="date_event" name="date_event" value="">
+              <date-picker v-model="formData.date_event" format="YYYY-MM-DD hh:mm" valueType="format" type="datetime"></date-picker>
+              <!-- <input type="datetime-local" placeholder="ДД.ММ.ГГГГ, ЧЧ:ММ" :min="new Date().toLocaleDateString('en-ca')+'T08:00'" ref="datePicker" class="date-picker-mm form-control" v-model="formData.date_event" id="date_event" name="date_event" value=""> -->
             </label>
             <div v-if="v$.date_event.$errors[0]" class="errors validation-error">
               {{ v$.date_event.$errors[0].$message }}
@@ -161,6 +163,8 @@
 </template>
 
 <script>
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, helpers } from '@vuelidate/validators'
 import { ref, reactive, onMounted, useContext, computed, nextTick } from '@nuxtjs/composition-api';
@@ -172,7 +176,8 @@ export default {
   name: 'section-edit',
   components: {
     VueUploadMultipleImage,
-    Multiselect
+    Multiselect,
+    DatePicker
     // Editor
     ,
     PopupSection
@@ -337,9 +342,6 @@ export default {
         formData.price = 0
         formData.count = 0
       }
-      if (formData.date_event !== null) {
-        Math.floor(new Date(formData.date_event).getTime())
-      }
       const data = {
         mode: "add",
         data: {
@@ -355,6 +357,12 @@ export default {
           tags: basketTags,
           show_in_main: formData.value.show_in_main
         }
+      }
+      if (formData.value.date_event !== null) {
+        console.log(formData.value.date_event)
+        formData.value.date_event = Math.floor(new Date(formData.value.date_event).getTime())
+        console.log(formData.value.date_event)
+        data.data.date_event = formData.value.date_event
       }
       const response = await store.dispatch(`cards/saveCard`, data)
       loading.value = false

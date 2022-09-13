@@ -2,7 +2,8 @@ export const state = () => ({
   authorizated: false,
   token: '',
   user: [],
-  ability: []
+  ability: [],
+  author: []
 })
 
 export const mutations = {
@@ -23,6 +24,9 @@ export const mutations = {
   },
   setMyAbility (state, data) {
     state.ability = data
+  },
+  setAuthor (state, data) {
+    state.author = data
   }
 }
 
@@ -47,6 +51,7 @@ export const actions = {
       if (res.status === 200) {
         console.log(res.data.data)
         commit('setUser',res.data.data.user)
+        commit('setAuthor',res.data.data?.author)
         // commit('abilities', res.data.data)
       }
       return res

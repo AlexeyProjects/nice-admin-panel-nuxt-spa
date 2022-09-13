@@ -1,6 +1,6 @@
 export const state = () => ({
   users: [],
-  ability: []
+  ability: [],
 })
 
 export const mutations = {
@@ -50,6 +50,26 @@ export const actions = {
   async deleteAbility ({ commit }, params) {
     try {
       const res = await this.$axios.post(`deleteAbility`, params)
+      this.$toast.success('Права изменены', { position: 'bottom-center', icon: false, duration: 2000 })
+      return res.data
+    } catch (e) {
+      console.log(e)
+      this.$toast.success('Ошибка:' +e.message, { position: 'bottom-center', icon: false, duration: 2000 })
+    }
+  },
+  async makeAuthor ({ commit }, params) {
+    try {
+      const res = await this.$axios.get(`makeAuthor/${params}`)
+      this.$toast.success('Права изменены', { position: 'bottom-center', icon: false, duration: 2000 })
+      return res.data
+    } catch (e) {
+      console.log(e)
+      this.$toast.success('Ошибка:' +e.message, { position: 'bottom-center', icon: false, duration: 2000 })
+    }
+  },
+  async deleteAuthor ({ commit }, params) {
+    try {
+      const res = await this.$axios.get(`deleteAuthor/${params}`)
       this.$toast.success('Права изменены', { position: 'bottom-center', icon: false, duration: 2000 })
       return res.data
     } catch (e) {

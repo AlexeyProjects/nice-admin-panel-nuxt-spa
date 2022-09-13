@@ -46,7 +46,8 @@
             <span class="label">
               Дата и время
             </span>
-            <input type="datetime-local" :min="new Date().toLocaleDateString('en-ca')+'T08:00'" ref="datePicker" class="date-picker-mm form-control" v-model="formData.date_event" id="date_event" name="date_event" value="">
+            <date-picker v-model="formData.date_event" format="YYYY-MM-DD hh:mm" valueType="format" type="datetime"></date-picker>
+            <!-- <input type="datetime-local" :min="new Date().toLocaleDateString('en-ca')+'T08:00'" ref="datePicker" class="date-picker-mm form-control" v-model="formData.date_event" id="date_event" name="date_event" value=""> -->
           </label>
           <div v-if="v$.date_event.$errors[0]" class="errors validation-error">
             {{ v$.date_event.$errors[0].$message }}
@@ -122,11 +123,16 @@
           </div>
         </div>
         
-        <div class="mb-15" v-if="showMusic" >
+        <div class="mb-15" v-if="showMusic && canChangeCard" >
           <inputFile dir="uploaded-files"  @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-5"></inputFile>
           <div v-if="v$.audioBasket.$errors[0]" class="errors validation-error">
             {{ v$.audioBasket.$errors[0].$message }}
           </div>
+        </div>
+        <div v-else class="mb-15">
+          <p v-for="(item, index) in audioBasket">
+            {{ item.title }}
+          </p>
         </div>
         <div class="mb-15" v-if="showVideo" >
           <inputFile dir="uploaded-files"  @changeFiles="changeVideo" accept="video/*"  @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-5"></inputFile>
@@ -149,7 +155,7 @@
         </div>
       </div>
 
-      <button @click.prevent="submit" :class="$style.btn_submit" class="submit btn">
+      <button v-if="canChangeCard" @click.prevent="submit" :class="$style.btn_submit" class="submit btn">
         Сохранить
       </button>
     </form>
@@ -159,6 +165,8 @@
 </template>
 
 <script>
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, helpers } from '@vuelidate/validators'
 import { ref, reactive, onMounted, watch,  useContext, computed, nextTick } from '@nuxtjs/composition-api';
@@ -169,7 +177,8 @@ export default {
   name: 'section-edit',
   components: {
     VueUploadMultipleImage,
-    Multiselect
+    Multiselect,
+    DatePicker
     // Editor
   },
   setup() {
@@ -235,7 +244,7 @@ export default {
       item.value = data
       optionsMultiselect.value = item.value.tags
       formData.value = {
-        ...item.value,
+        ...item.value, 
         audioBasket: [],
         imagesPreview: [],
         videoBasket: []
@@ -333,15 +342,10 @@ export default {
         formData.value.price = 0
         formData.value.count = 0
       }
-      if (formData.value.date_event !== null) {
-        console.log(formData)
-        formData.value.date_event = Math.floor(new Date(formData.value.date_event).getTime())
-      }
       const data = {
         mode: "edit",
         data: {
           id: formData.value.id,
-          author_id: formData.value.author_id,
           title: formData.value.title,
           text: formData.value.text,
           fileIds: basketFiles,
@@ -355,8 +359,16 @@ export default {
           show_in_main: formData.value.show_in_main
         }
       }
+      if (formData.value.date_event !== null) {
+        console.log(formData.value.date_event)
+        formData.value.date_event = Math.floor(new Date(formData.value.date_event).getTime())
+        console.log(formData.value.date_event)
+        data.data.date_event = formData.value.date_event
+      }
       const response = await store.dispatch(`cards/saveCard`, data)
-      formData.value.date_event = response[0].date_event
+      if (formData.value.date_event) {
+        // formData.value.date_event = response[0].date_event
+      }
       loading.value = false
       // $toast.success('Информация сохранена', { position: 'bottom-center', icon: false, duration: 2000 })
     }
@@ -518,6 +530,9 @@ export default {
       formData.value.imagesPreview = first
       console.log(formData.value.imagesPreview)
     });
+    const canChangeCard = computed(() => {
+      return store.state?.login?.ability?.find(ability => ability.id === 6)?.hasUser && store.state?.login?.author?.id === formData.value.author_id
+    })
     onMounted(() => {
       getSections()
     })
@@ -560,7 +575,8 @@ export default {
       showTagsValidate,
       showImagesValidate,
       deleteCard,
-      canDeleteCard
+      canDeleteCard,
+      canChangeCard
       // configEditor
     }
   }
@@ -581,6 +597,9 @@ export default {
     display: flex;
     justify-content: space-between;
     .leftpanel {
+      display: flex;
+    }
+    .rightpanel {
       display: flex;
     }
   }

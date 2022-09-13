@@ -37,6 +37,38 @@ export const actions = {
       this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
     }
   },
+
+  async changeStatus ({ commit }, params) {
+    // console.log(this.$axios.defaults.baseHome)
+    try {
+      const res = await this.$axios.post(`https://test.itisthenice.com/radioCommands`, params, {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
+      // this.$toast.success(`Радио ${params.title} удален`, { position: 'bottom-center', icon: false, duration: 2000 })
+      return res.data.data
+    } catch (e) {
+      console.log(e)
+      this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
+    }
+  },
+
+  async getStatus ({ commit }, params) {
+    // console.log(this.$axios.defaults.baseHome)
+    try {
+      const res = await this.$axios.post(`https://test.itisthenice.com/radioCommands`, params, {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
+      // this.$toast.success(`Радио ${params.title} удален`, { position: 'bottom-center', icon: false, duration: 2000 })
+      return res.data.result
+    } catch (e) {
+      console.log(e)
+      this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
+    }
+  },
 }
 
 

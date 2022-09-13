@@ -35,7 +35,7 @@
               <input v-model="formData.user.email" readonly type="text"/>
             </label>
           </div>
-          <div v-if="formData.user" class="input">
+          <div v-if="false" class="input">
             <label for="">
               <span class="label">
                 Заметка
@@ -51,6 +51,14 @@
               {{ item.ability_name }}
             </span>
             <input @change="changeAbility(item)" type="checkbox" v-model="item.hasUser">
+          </label>
+        </div>
+        <div class="input checkbox">
+          <label>
+            <span class="label">
+              Является автором
+            </span>
+            <input @change="stateAuthor()" v-model="isAuthor" type="checkbox">
           </label>
         </div>
         <button @click.prevent="submit" class="btn">
@@ -72,6 +80,7 @@ export default {
     const formData = ref({
 
     })
+    const isAuthor = ref(false)
     const abilities = ref({})
     const item = ref({})
     const userAbilities = ref({})
@@ -79,12 +88,15 @@ export default {
     const getSections = async () => {
       loading.value = true
       const data = await store.dispatch('login/checkVerify')
+      const author = data.data.data.author
+      isAuthor.value = author
       const abilitiesData = await store.dispatch('users/getAbilities', data.data.data.user.id )
       abilities.value = abilitiesData.data
-      item.value = data.data.data
+      item.value = Object.assign({}, data.data.data);
       formData.value = {
         ...item.value
       }
+      formData.value = Object.assign({}, data.data.data);
       loading.value = false
     }
     const changeAbility = async (item) => {
@@ -99,6 +111,9 @@ export default {
         store.dispatch('users/deleteAbility', data)
       } 
     }
+    const makeAuthor = async () => {
+      
+    }
     const submit = async () => {
       const data = {
         user_id: formData.value.id,
@@ -108,6 +123,13 @@ export default {
       const response = await store.dispatch('users/changeNote', data)
       $toast.success('Информация сохранена', { position: 'bottom-center', icon: false, duration: 2000 })
       loading.value = false
+    }
+    const stateAuthor = async () => {
+      if (isAuthor.value) {
+        await store.dispatch('users/makeAuthor', formData.value.user.id)
+      } else {
+        await store.dispatch('users/deleteAuthor', formData.value.author.id)
+      }
     }
     onMounted(() => {
       getSections()
@@ -120,7 +142,9 @@ export default {
       submit,
       userAbilities,
       abilities,
-      changeAbility
+      changeAbility,
+      isAuthor,
+      stateAuthor
     }
   }
 }
