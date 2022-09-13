@@ -256,12 +256,16 @@ export default {
 <style module lang="scss">
   .title {
     font-size: 2.4rem;
+    @media (max-width: 768px) {
+      font-size: 1.8rem;
+    }
   }
   .seotitle {
     margin-bottom: 1rem;
   }
   .orderInfo {
     width: 30%;
+    max-width: 100%;
     @media (max-width: 768px) {
       width: 30rem;
     }

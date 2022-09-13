@@ -273,6 +273,9 @@ export default {
 <style module lang="scss">
   .title {
     font-size: 2.4rem;
+    @media (max-width: 768px) {
+      font-size: 1.8rem;
+    }
   }
   .seotitle {
     margin-bottom: 1rem;
@@ -285,6 +288,7 @@ export default {
   }
   .leftpanel {
     display: flex;
+    align-items: center;
     margin-right: 2rem;
   }
   .rightpanel {
@@ -307,7 +311,7 @@ export default {
   }
   .wires {
     width: 30rem;
-    
+    max-width: 100%;
     .row {
       padding: 1rem;
       transition: .3s;

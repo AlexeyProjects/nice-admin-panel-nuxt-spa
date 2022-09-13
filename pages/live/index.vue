@@ -10,7 +10,7 @@
         </div>
         <div :class="$style.panel">
           <div class="mr-10">
-            Статус: {{ statusLive }}
+            {{ statusLive }}
             <!-- Статус: Включен -->
           </div>
           <button @click.prevent="changeStatus" class="btn">
@@ -337,11 +337,17 @@ export default {
 <style lang="scss" module>
   .header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    @media (max-width: 768px) {
+      align-items: center;
+    }
   }
   .title {
     font-size: 2.4rem;
-    margin-bottom: 1rem;
+    @media (max-width: 768px) {
+      font-size: 1.8rem;
+    }
   }
   .wrap {
     position: relative;
@@ -363,6 +369,10 @@ export default {
   .panelContent {
     position: relative;
     width: 35rem;
+    max-width: 100%;
+    @media (max-width: 768px) {
+      width: 20rem;
+    }
     .panelClose {
       position: absolute;
       right: 0;

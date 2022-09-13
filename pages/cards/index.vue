@@ -146,13 +146,20 @@ export default {
     display: flex;
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
     margin-bottom: 1rem;
+    @media (max-width: 768px) {
+      align-items: center;
+    }
     .add {
       display: inline-flex;
     }
   }
   .title {
     font-size: 2.4rem;
+    @media (max-width: 768px) {
+      font-size: 1.8rem;
+    }
 
   }
   .wrap {

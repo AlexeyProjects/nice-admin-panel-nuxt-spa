@@ -585,6 +585,9 @@ export default {
 <style module lang="scss">
   .title {
     font-size: 2.4rem;
+    @media (max-width: 768px) {
+      font-size: 1.8rem;
+    }
   }
   .seotitle {
     margin-bottom: 1rem;

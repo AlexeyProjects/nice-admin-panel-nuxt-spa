@@ -146,6 +146,9 @@ export default {
   .title {
     font-size: 2.4rem;
     margin-bottom: 1rem;
+    @media (max-width: 768px) {
+      font-size: 1.8rem;
+    }
   }
   .wrap {
     position: relative;
