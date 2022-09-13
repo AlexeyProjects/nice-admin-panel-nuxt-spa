@@ -167,7 +167,7 @@ import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, helpers } from '@vuelidate/validators'
-import { ref, reactive, onMounted, useContext, computed, nextTick } from '@nuxtjs/composition-api';
+import { ref, reactive, onMounted, useContext, useRouter, computed, nextTick } from '@nuxtjs/composition-api';
 import VueUploadMultipleImage from 'vue-upload-multiple-image';
 import Multiselect from 'vue-multiselect'
 import PopupSection from '~/components/PopupSection/index.vue';
@@ -184,6 +184,7 @@ export default {
 },
   setup() {
     const { store, route, $toast, $axios } = useContext()
+    const router = useRouter()
     const loading = ref(false)
     const formData = ref({
 
@@ -365,6 +366,11 @@ export default {
         data.data.date_event = formData.value.date_event
       }
       const response = await store.dispatch(`cards/saveCard`, data)
+      console.log(response)
+      const newId = response[0].id
+      router.push({
+        path: `/cards/${newId}`
+      })
       loading.value = false
       // $toast.success('Информация сохранена', { position: 'bottom-center', icon: false, duration: 2000 })
     }

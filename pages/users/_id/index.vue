@@ -64,6 +64,15 @@
             <input @change="changeAbility(ability)" type="checkbox" v-model="ability.hasUser">
           </label>
         </div>
+        <!-- <div class="input checkbox">
+          <label>
+            <span class="label">
+              Является автором
+            </span>
+            <input @change="stateAuthor()" v-model="isAuthor" type="checkbox">
+          </label>
+        </div> -->
+
 
         <button @click.prevent="submit" class="btn">
           Сохранить
@@ -84,6 +93,7 @@ export default {
     const formData = ref({
 
     })
+    const isAuthor = ref(false)
     const abilities = ref({})
     const item = ref({})
     const getSections = async () => {
