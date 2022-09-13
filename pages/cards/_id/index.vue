@@ -531,7 +531,7 @@ export default {
       console.log(formData.value.imagesPreview)
     });
     const canChangeCard = computed(() => {
-      return store.state?.login?.ability?.find(ability => ability.id === 6)?.hasUser && store.state?.login?.author?.id === formData.value.author_id
+      return store.state?.login?.ability?.find(ability => ability.id === 6)?.hasUser || store.state?.login?.author?.id === formData.value.author_id || store.state?.login?.ability?.find(ability => ability.id === 12)?.hasUser
     })
     onMounted(() => {
       getSections()
