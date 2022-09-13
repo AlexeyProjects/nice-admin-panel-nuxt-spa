@@ -15,6 +15,7 @@
     @rowClick="editRow"
     @changePage="changePage"
     @searchInput="searchInput"
+    @changeSort="changeSort"
     />
   </div>
 </template>
@@ -65,7 +66,9 @@ export default {
     const paramsSearch = ref({
       searchField: '',
       page: 1,
-      count: 10
+      count: 10,
+      order_by_column: '',
+      order_by_mode: '',
     })
     const loading = ref(false)
     const sections = ref([])
@@ -92,6 +95,18 @@ export default {
       paramsSearch.value.searchField = searchParams
       getSections()
     }
+    const changeSort = async (params) => {
+      console.log(params)
+      paramsSearch.value.order_by_column = params[0].field
+      if (paramsSearch.value.order_by_mode === '') {
+        paramsSearch.value.order_by_mode = params[0].type
+      } else if (paramsSearch.value.order_by_mode === 'asc') {
+        paramsSearch.value.order_by_mode = 'desc'
+      } else if (paramsSearch.value.order_by_mode === 'desc') {
+        paramsSearch.value.order_by_mode = 'asc'
+      }
+      getSections()
+    }
     onMounted(() => {
       getSections()
     })
@@ -105,7 +120,8 @@ export default {
       editRow,
       paramsSearch,
       changePage,
-      searchInput
+      searchInput,
+      changeSort
     }
   }
 }

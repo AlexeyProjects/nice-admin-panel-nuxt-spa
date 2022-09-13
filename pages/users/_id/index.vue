@@ -18,6 +18,7 @@
               </div>
             </div>
             <div :class="$style.rightpanel">
+              <!-- <button @click.prevent="deleteCard" class="btn red">Удалить</button> -->
             </div>
           </div>
           <div class="input">
@@ -55,7 +56,7 @@
           
         </div>
 
-        <div class="abilities mb-20">
+        <div v-if="canChangeStatus" class="abilities mb-20">
           <label v-for="(ability, index) in abilities">
             <span>
               {{ ability.ability_name }}
@@ -74,7 +75,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, useContext } from '@nuxtjs/composition-api';
+import { ref, reactive, onMounted, computed, useContext } from '@nuxtjs/composition-api';
 export default {
   name: 'section-edit',
   setup() {
@@ -118,6 +119,9 @@ export default {
         store.dispatch('users/deleteAbility', data)
       } 
     }
+    const canChangeStatus = computed(() => {
+      return store.state?.login?.ability?.find(ability => ability.id === 8)?.hasUser
+    })
     onMounted(() => {
       getSections()
     })
@@ -128,7 +132,8 @@ export default {
       loading,
       submit,
       abilities,
-      changeAbility
+      changeAbility,
+      canChangeStatus
     }
   }
 }
@@ -141,7 +146,11 @@ export default {
   .seotitle {
     margin-bottom: 1rem;
   }
-  .leftpanel {
+  .head {
     display: flex;
+    justify-content: space-between;
+    .leftpanel {
+      display: flex;
+    }
   }
 </style>

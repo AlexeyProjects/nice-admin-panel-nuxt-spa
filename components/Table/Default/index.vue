@@ -21,7 +21,7 @@
         mode="remote"
         />
         <paginate
-        v-show="!$props.loading && $props.tableOptions.totalRows >= 10"
+        v-show="!$props.loading && $props.tableOptions.totalRows >= $props.tableOptions.perPage"
         :page-count="pageCount"
         :click-handler="changePage"
         :prev-text="'Пред'"
@@ -75,7 +75,7 @@ export default {
       emit('changePage', numPage)
     }
     const onSortChange = (params) => {
-      console.log(params)
+      emit('changeSort', params)
     }
     onMounted(() => {
       currentPage.value = props.curPage

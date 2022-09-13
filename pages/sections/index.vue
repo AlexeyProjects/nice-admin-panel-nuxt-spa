@@ -13,6 +13,7 @@
     :loading="loading"
     :tableOptions="tableOptions"
     @rowClick="editRow"
+    @changeSort="changeSort"
     @changePage="changePage"
     @searchInput="searchInput"
     />
@@ -55,15 +56,16 @@ export default {
         enable: true
       },
       totalRows: null,
-      perPage: 10
+      perPage: 20
     })
     const paramsSearch = ref({
       section_id: null,
       searchField: '',
-      author_id: null,
       tags: [],
       page: 1,
-      count: 10
+      count: 20,
+      order_by_column: '',
+      order_by_mode: '',
     })
     const loading = ref(false)
     const sections = ref([])
@@ -92,6 +94,18 @@ export default {
       paramsSearch.value.searchField = searchParams
       getSections()
     }
+    const changeSort = async (params) => {
+      console.log(params)
+      paramsSearch.value.order_by_column = params[0].field
+      if (paramsSearch.value.order_by_mode === '') {
+        paramsSearch.value.order_by_mode = params[0].type
+      } else if (paramsSearch.value.order_by_mode === 'asc') {
+        paramsSearch.value.order_by_mode = 'desc'
+      } else if (paramsSearch.value.order_by_mode === 'desc') {
+        paramsSearch.value.order_by_mode = 'asc'
+      }
+      getSections()
+    }
     onMounted(() => {
       getSections()
     })
@@ -106,7 +120,8 @@ export default {
       editRow,
       paramsSearch,
       changePage,
-      searchInput
+      searchInput,
+      changeSort
     }
   }
 }

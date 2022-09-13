@@ -9,7 +9,7 @@
           Карточки
         </div>
       </div>
-      <NuxtLink to="/cards/add" class="btn add" :class="$style.add">
+      <NuxtLink v-if="canAddCard" to="/cards/add" class="btn add" :class="$style.add">
         Добавить
       </NuxtLink>
     </div>
@@ -19,6 +19,7 @@
     :tableOptions="tableOptions"
     :curPage="paramsSearch.curPage"
     @rowClick="editRow"
+    @changeSort="changeSort"
     @changePage="changePage"
     @searchInput="searchInput"
     />
@@ -28,7 +29,7 @@
 </template>
 
 <script>
-import { ref, useContext, onMounted, useRouter } from '@nuxtjs/composition-api';
+import { ref, useContext, onMounted, computed, useRouter } from '@nuxtjs/composition-api';
 
 
 export default {
@@ -71,7 +72,9 @@ export default {
       author_id: null,
       tags: [],
       page: 1,
-      count: 30
+      count: 30,
+      order_by_column: '',
+      order_by_mode: '',
     })
     const loading = ref(false)
     const sections = ref([])
@@ -98,6 +101,25 @@ export default {
       paramsSearch.value.searchField = searchParams
       getSections()
     }
+    const changeSort = async (params) => {
+      console.log(params)
+      paramsSearch.value.order_by_column = params[0].field
+      if (paramsSearch.value.order_by_mode === '') {
+        paramsSearch.value.order_by_mode = params[0].type
+      } else if (paramsSearch.value.order_by_mode === 'asc') {
+        paramsSearch.value.order_by_mode = 'desc'
+      } else if (paramsSearch.value.order_by_mode === 'desc') {
+        paramsSearch.value.order_by_mode = 'asc'
+      }
+      if (params[0].field === 'section.slug') {
+        paramsSearch.value.order_by_column = 'section_id'
+      }
+      
+      getSections()
+    }
+    const canAddCard = computed(() => {
+      return store.state?.login?.ability?.find(ability => ability.id === 6)?.hasUser
+    })
     onMounted(() => {
       getSections()
     })
@@ -111,7 +133,9 @@ export default {
       editRow,
       paramsSearch,
       changePage,
-      searchInput
+      searchInput,
+      changeSort,
+      canAddCard
     }
   }
 }

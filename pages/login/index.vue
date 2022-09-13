@@ -1,9 +1,11 @@
 <template>
   <div :class="$style.auth" class="wrap">
+    <Background></Background>
     <UILoading
     v-if="loading"
     />
     <div v-else :class="$style.login">
+      <logotype class="logotype-login"/>
       <form action="" class="">
         <div class="input">
           <label for="">
@@ -31,29 +33,31 @@
 
 <script>
 import { ref, reactive, onMounted, useContext, useRouter } from '@nuxtjs/composition-api';
+import Background from '~/components/Background/index.vue';
 export default {
-  name: 'login',
-  layout: 'login',
-  setup(props, ctx) {
-    const { store, $toast } = useContext()
-    const router = useRouter()
-    const formData = ref({
-      email: '',
-      password: ''
-    })
-    const loading = ref(false)
-    const submit = async () => {
-      const data = formData.value
-      loading.value = true
-      const response = await store.dispatch('login/login', data)
-      loading.value = false
-    }
-    return {
-      formData,
-      submit,
-      loading
-    }
-  }
+    name: "login",
+    layout: "login",
+    setup(props, ctx) {
+        const { store, $toast } = useContext();
+        const router = useRouter();
+        const formData = ref({
+            email: "",
+            password: ""
+        });
+        const loading = ref(false);
+        const submit = async () => {
+            const data = formData.value;
+            loading.value = true;
+            const response = await store.dispatch("login/login", data);
+            loading.value = false;
+        };
+        return {
+            formData,
+            submit,
+            loading
+        };
+    },
+    components: { Background }
 }
 </script>
 
@@ -68,15 +72,21 @@ export default {
   }
   .login {
     position: absolute;
-    padding: 2rem;
+    
     top: 50%;
-    border-radius: 10px;
+    
     left: 50%;
-    background-color: #fff;
-    -webkit-box-shadow: 0px 0px 12px 0px rgba(34, 60, 80, 0.2);
-    -moz-box-shadow: 0px 0px 12px 0px rgba(34, 60, 80, 0.2);
-    box-shadow: 0px 0px 12px 0px rgba(34, 60, 80, 0.2);
+    
     color: #050505;
     transform: translate(-50%, -50%);
+    z-index: 10;
+    form {
+      border-radius: 10px;
+      padding: 2rem;
+      background-color: #fff;
+      -webkit-box-shadow: 0px 0px 12px 0px rgba(34, 60, 80, 0.2);
+      -moz-box-shadow: 0px 0px 12px 0px rgba(34, 60, 80, 0.2);
+      box-shadow: 0px 0px 12px 0px rgba(34, 60, 80, 0.2);
+    }
   }
 </style>

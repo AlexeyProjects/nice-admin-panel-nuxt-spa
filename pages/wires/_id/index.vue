@@ -307,9 +307,10 @@ export default {
   }
   .wires {
     width: 30rem;
+    
     .row {
       padding: 1rem;
-      
+      transition: .3s;
       border-radius: 5px;
       margin-bottom: 0.3rem;
       background-color: #fff;
@@ -328,6 +329,7 @@ export default {
       label {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         &:hover{
           cursor: pointer;
         }

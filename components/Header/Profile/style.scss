@@ -16,10 +16,15 @@
 }
 .mobileProfile {
   display: flex;
-  justify-content: flex-end;
+  align-items: flex-end;
+  flex-direction: column;
+  // justify-content: flex-end;
   margin-bottom: 10rem;
   color: rgb(156, 168, 179);
   margin: 1rem 1rem 10rem 1rem;
+  a {
+    color: rgb(156, 168, 179);
+  }
   svg {
     width: 2rem;
     height: 2rem;

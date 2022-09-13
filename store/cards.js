@@ -38,6 +38,19 @@ export const actions = {
       this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
     }
   },
+  async deleteCard ({ commit }, params) {
+    try {
+      const res = await this.$axios.get(`deleteById/${params}`)
+      this.$toast.success('Карточка успешно удалена', { position: 'bottom-center', icon: false, duration: 2000 })
+      this.$router.push({
+        path: '/cards'
+      })
+      return res.data.data
+    } catch (e) {
+      console.log(e.message)
+      this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
+    }
+  },
 }
 
 

@@ -28,6 +28,15 @@ main {
     margin-left: 4rem;
   }
 }
+.logotype-login {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  img {
+    width: 16rem !important;
+    height: auto !important;
+  }
+}
 audio {
   height: 3rem;
   &::-webkit-media-controls-panel {
@@ -43,6 +52,7 @@ audio {
   label {
     padding: .5rem 1.5rem;
     display: flex;
+    align-items: center;
     justify-content: space-between;
     transition: .2s;
     &:not(:last-child) {
@@ -72,7 +82,22 @@ a {
 }
 .quotes {
   position: relative;
+  flex-direction: column;
+  display: flex;
   width: 30rem;
+  label {
+    flex-direction: column;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    svg {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+  .list {
+    flex-direction: column;
+  }
   .add {
     position: absolute;
     top: 0;
@@ -107,6 +132,7 @@ a {
   }
   &.checkbox {
     flex-direction: row;
+    align-items: center;
     label {
       flex-direction: row;
     }

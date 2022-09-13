@@ -13,6 +13,7 @@
     :loading="loading"
     :tableOptions="tableOptions"
     @rowClick="editRow"
+    @changeSort="changeSort"
     @changePage="changePage"
     @searchInput="searchInput"
     />
@@ -20,7 +21,7 @@
 </template>
 
 <script>
-import { ref, useContext, onMounted, useRouter } from '@nuxtjs/composition-api';
+import { ref, useContext, onMounted, computed, useRouter } from '@nuxtjs/composition-api';
 
 
 export default {
@@ -32,12 +33,11 @@ export default {
     const { store } = useContext()
     const router = useRouter()
     const paramsSearch = ref({
-      section_id: null,
       searchField: '',
-      author_id: null,
-      tags: [],
       page: 1,
-      count: 30
+      count: 30,
+      order_by_column: '',
+      order_by_mode: '',
     })
     const columns = ref([
       {
@@ -47,7 +47,7 @@ export default {
       },
       {
         label: 'Статус',
-        field: 'status_id',
+        field: 'status.status_name',
         type: 'text'
       },
       {
@@ -57,7 +57,7 @@ export default {
       },
       {
         label: 'Сумма заказа',
-        field: 'basket.cards_sum',
+        field: 'cards_sum',
         type: 'text'
       }
     ])
@@ -103,6 +103,24 @@ export default {
       paramsSearch.value.page = newPage
       getSections()
     }
+    const changeSort = async (params) => {
+      console.log(params)
+      paramsSearch.value.order_by_column = params[0].field
+      if (paramsSearch.value.order_by_mode === '') {
+        paramsSearch.value.order_by_mode = params[0].type
+      } else if (paramsSearch.value.order_by_mode === 'asc') {
+        paramsSearch.value.order_by_mode = 'desc'
+      } else if (paramsSearch.value.order_by_mode === 'desc') {
+        paramsSearch.value.order_by_mode = 'asc'
+      }
+      if (params[0].field === 'status.status_name') {
+        paramsSearch.value.order_by_column = 'status_id'
+      }
+      getSections()
+    }
+    const canChangeStatus = computed(() => {
+      return store.state?.login?.ability?.find(ability => ability.id === 10)?.hasUser
+    })
     onMounted(() => {
       getSections()
     })
@@ -116,7 +134,9 @@ export default {
       editRow,
       paramsSearch,
       searchInput,
-      changePage
+      changePage,
+      changeSort,
+      canChangeStatus
     }
   }
 }
