@@ -26,6 +26,7 @@ main {
   transition: .3s;
   @media (max-width: 768px) {
     margin-left: 4rem;
+    padding: 1rem;
   }
 }
 .logotype-login {
@@ -86,6 +87,10 @@ a {
   flex-direction: column;
   display: flex;
   width: 30rem;
+  max-width: 100%;
+  .fill {
+    max-width: 75%;
+  }
   label {
     flex-direction: column;
     border-bottom: 1px solid #ccc;

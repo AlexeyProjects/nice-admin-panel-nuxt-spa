@@ -24,8 +24,8 @@
         v-show="!$props.loading && $props.tableOptions.totalRows >= $props.tableOptions.perPage"
         :page-count="pageCount"
         :click-handler="changePage"
-        :prev-text="'Пред'"
-        :next-text="'След'"
+        :prev-text="'<'"
+        :next-text="'>'"
         :container-class="'pagination'"
         ></paginate>
       </div>

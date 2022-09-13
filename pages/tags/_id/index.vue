@@ -13,9 +13,6 @@
               <button @click.prevent="$router.push('/tags')" class="btn back">
                 Назад
               </button>
-              <div :class="$style.title">
-                Добавить тег
-              </div>
             </div>
             <div :class="$style.rightpanel">
               <button @click.prevent="deleteTag" class="btn red">Удалить</button> 

@@ -279,7 +279,6 @@ export default {
     display: flex;
     width: -webkit-fill-available;
     overflow: auto;
-    justify-content: flex-end;
     white-space: nowrap;
     @media (max-width: 768px) {
       font-size: 1.4rem;

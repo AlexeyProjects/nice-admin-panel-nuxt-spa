@@ -72,7 +72,7 @@ export default {
   }
   .login {
     position: absolute;
-    
+    max-width: 90%;
     top: 50%;
     
     left: 50%;
