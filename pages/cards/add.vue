@@ -135,12 +135,16 @@
           </div>
           
           <!-- <editor/> -->
+          <div class="editor mb-15">
+            <span class="mb-10">Краткое описание</span>
+            <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.text" />
+            <div class="editor-preview" v-html="formData.text">
+          </div>
+          
+          </div>
 
           <div class="editor">
             <span class="mb-10">Описание</span>
-            <div v-if="v$.text.$errors[0]" class="mb-10 errors validation-error">
-              {{ v$.text.$errors[0].$message }}
-            </div>
             <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.text" />
             <div class="editor-preview" v-html="formData.text">
           </div>
@@ -212,6 +216,7 @@ export default {
             show_in_main: false
         }
     )
+    const imagesPreview = ref([])
     const rules = reactive({
       title: { required: helpers.withMessage('Введите заголовок', required) },
       tags: { 
@@ -228,17 +233,9 @@ export default {
           required
         }
       },
-      text: { 
-        required: helpers.withMessage('Введите описание', required),
-        minLength: helpers.withMessage(
-          ({}) => `Введите минимум 50 симврорв`,
-          minLength(50)
-        )
-      },
     })
     const changedFIle = ref({})
     const imageUploaded = ref([])
-    const imagesPreview = ref([])
     const uploadedFiles = ref([])
     const videoBasket = ref([])
     const audioBasket = ref([])
@@ -255,7 +252,7 @@ export default {
       loading.value = false
     }
     const editorToolbar = ref(
-      [["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }],
+      [["bold", "italic", "underline"], ['link'], [{ list: "ordered" }, { list: "bullet" }],
       [{ align: "left" }, { align: "center" }, { align: "right"}, { align: "justify"}],
       [{ color: "color-picker" }]],
     )
@@ -350,6 +347,7 @@ export default {
           title: formData.value.title,
           text: formData.value.text,
           fileIds: basketFiles,
+          author_id: 72,
           item_type_id: 1,
           price: +formData.value.price,
           count: +formData.value.count,

@@ -104,12 +104,12 @@ export default {
       },
       {
         label: 'Раздел',
-        field: 'section_id',
+        field: 'section.title',
         type: 'text'
       },
       {
         label: 'Кол-во',
-        field: 'count',
+        field: 'pivot.quantity',
         type: 'text'
       },
       {

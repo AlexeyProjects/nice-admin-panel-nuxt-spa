@@ -2,11 +2,11 @@
   <div class="">
     <div :class="$style.header">
       <div :class="$style.title">
-        Пользователи
+        Авторы
       </div>
       <div :class="$style.panel">
-        <button @click.prevent="openAuthors" class="btn">
-          Авторы
+        <button @click.prevent="addAuthor" class="btn">
+          Добавить
         </button>
       </div>
     </div>
@@ -109,9 +109,9 @@ export default {
       }
       getSections()
     }
-    const openAuthors = () => {
+    const addAuthor = () => {
       router.push({
-        path: `/users/authors`
+        path: '/users/authors/add'
       })
     }
     onMounted(() => {
@@ -129,7 +129,7 @@ export default {
       changePage,
       searchInput,
       changeSort,
-      openAuthors
+      addAuthor
     }
   }
 }
@@ -138,6 +138,7 @@ export default {
 <style lang="scss" module>
   .header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
   }
   .title {

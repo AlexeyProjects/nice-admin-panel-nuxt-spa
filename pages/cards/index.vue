@@ -48,7 +48,7 @@ export default {
       },
       {
         label: 'Раздел',
-        field: 'section.slug',
+        field: 'section.title',
         type: 'text'
       },
       {

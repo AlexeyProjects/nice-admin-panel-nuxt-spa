@@ -15,7 +15,35 @@ body {
 main {
   display: flex;
   flex-direction: column;
+  &-wrap {
+    display: flex;
+  }
 }
+.detail-card {
+  .main {
+    &-wrap {
+      display: flex;
+      justify-content: space-between;
+      .content {
+        width: 48%;
+      }
+      .coments {
+        width: 48%;
+      }
+      @media (max-width: 768px) {
+        flex-direction: column;
+        .content {
+          margin-bottom: 5rem;
+          width: 100%;
+        }
+        .coments {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
 .app {
   margin-left: $leftBarWidth;
   min-height: 100vh;

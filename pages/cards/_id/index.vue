@@ -7,7 +7,7 @@
     v-show="!loading"
     class="">
     <form action="">
-      <div class="main">
+      <div class="main detail-card">
         <div :class="$style.head" class="head mb-20">
           <div :class="$style.leftpanel">
             <button @click.prevent="$router.push('/cards')" class="btn back">
@@ -21,139 +21,168 @@
             <button @click.prevent="deleteCard" class="btn red">Удалить</button>
           </div>
         </div>
-        
-        <div class="input">
-          <label for="">
-            <span class="label">
-              Название
-            </span>
-            <input v-model="formData.title" type="text">
-          </label>
-          <div v-if="showTitleValidate" class="errors">
-            {{ v$.title.$errors[0].$message }}
+        <div class="main-wrap">
+          <div class="content">
+            <div class="input">
+              <label for="">
+                <span class="label">
+                  Название
+                </span>
+                <input v-model="formData.title" type="text">
+              </label>
+              <div v-if="showTitleValidate" class="errors">
+                {{ v$.title.$errors[0].$message }}
+              </div>
+            </div>
+            <div class="input checkbox">
+              <label>
+                <span class="label">
+                  Отображать на главной
+                </span>
+                <input v-model="formData.show_in_main" type="checkbox">
+              </label>
+            </div>
+            <div v-if="showDate" class="input datepicker">
+              <label>
+                <span class="label">
+                  Дата и время
+                </span>
+                <date-picker v-model="formData.date_event" format="YYYY-MM-DD hh:mm" valueType="format" type="datetime"></date-picker>
+                <!-- <input type="datetime-local" :min="new Date().toLocaleDateString('en-ca')+'T08:00'" ref="datePicker" class="date-picker-mm form-control" v-model="formData.date_event" id="date_event" name="date_event" value=""> -->
+              </label>
+              <div v-if="v$.date_event.$errors[0]" class="errors validation-error">
+                {{ v$.date_event.$errors[0].$message }}
+              </div>
+            </div>
+            
+            <div class="input checkbox">
+              <label>
+                <span class="label">
+                  Является товаром
+                </span>
+                <input v-model="isProduct" type="checkbox">
+              </label>
+            </div>
+            <div v-if="isProduct" class="input">
+              <label>
+                <span class="label">
+                  Количество
+                </span>
+                <input v-model="formData.count" type="text">
+              </label>
+            </div>
+            <div v-if="isProduct" class="input">
+              <label>
+                <span class="label">
+                  Цена
+                </span>
+                <input v-model="formData.price" type="text">
+              </label>
+            </div>
+    
+            <div v-if="item.section_id !== 2" class="input image">
+              <span>Фотографии</span>
+              <vue-upload-multiple-image
+              :maxImage="10"
+              class="mb-15"
+              :showEdit="false"
+              markIsPrimaryText=""
+              markIsPrimaryText=""
+              dropText="Перетащите картинку сюда"
+              dragText="Перетащите картинку сюда"
+              browseText="Выбрать картинку"
+              :showPrimary="false"
+              @upload-success="uploadImageSuccess"
+              @before-remove="beforeRemove"
+              :data-images="imagesPreview"
+              ></vue-upload-multiple-image>
+              <div v-if="showImagesValidate" class="errors validation-error">
+                {{ v$.imagesPreview.$errors[0].$message }}
+              </div>
+            </div>
+            <div class="mb-15">
+              <span class="mb-15">
+                Теги
+              </span>
+              <multiselect 
+              class="mt-15 mb-5"
+              v-model="formData.tags" 
+              :options="tags" 
+              label="name"
+              track-by="id"
+              :multiple="true"/>
+              <div v-if="showTagsValidate" class="errors validation-error">
+                {{ v$.tags.$errors[0].$message }}
+              </div>
+            </div>
+            
+            <div class="mb-15" v-if="showMusic && canChangeCard" >
+              <inputFile dir="uploaded-files"  @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-5"></inputFile>
+              <div v-if="v$.audioBasket.$errors[0]" class="errors validation-error">
+                {{ v$.audioBasket.$errors[0].$message }}
+              </div>
+            </div>
+            <div v-else class="mb-15">
+              <p v-for="(item, index) in audioBasket">
+                {{ item.title }}
+              </p>
+            </div>
+            <div class="mb-15" v-if="showVideo" >
+              <inputFile dir="uploaded-files"  @changeFiles="changeVideo" accept="video/*"  @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-5"></inputFile>
+              <div v-if="v$.videoBasket.$errors[0]" class="errors validation-error">
+                {{ v$.videoBasket.$errors[0].$message }}
+              </div>
+            </div>
+            
+            <!-- <editor/> -->
+            <div class="editor mb-15">
+              <span class="mb-10">Краткое описание</span>
+              <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.text" />
+              <div class="editor-preview" v-html="formData.text">
+            </div>
+            
+            </div>
+
+            <div class="editor">
+              <span class="mb-10">Описание</span>
+              <div v-if="showEditorValidate" class="mb-10 errors validation-error">
+                {{ v$.text.$errors[0].$message }}
+              </div>
+              <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.text" />
+              <div class="editor-preview" v-html="formData.text">
+            </div>
+            
+            </div>
           </div>
-        </div>
-        <div class="input checkbox">
-          <label>
-            <span class="label">
-              Отображать на главной
-            </span>
-            <input v-model="formData.show_in_main" type="checkbox">
-          </label>
-        </div>
-        <div v-if="showDate" class="input datepicker">
-          <label>
-            <span class="label">
-              Дата и время
-            </span>
-            <date-picker v-model="formData.date_event" format="YYYY-MM-DD hh:mm" valueType="format" type="datetime"></date-picker>
-            <!-- <input type="datetime-local" :min="new Date().toLocaleDateString('en-ca')+'T08:00'" ref="datePicker" class="date-picker-mm form-control" v-model="formData.date_event" id="date_event" name="date_event" value=""> -->
-          </label>
-          <div v-if="v$.date_event.$errors[0]" class="errors validation-error">
-            {{ v$.date_event.$errors[0].$message }}
+          <div class="coments wrap-loading">
+            <div class="mb-15">Коментарии</div>
+            <UILoading
+            v-if="loadingComents"
+            />
+            <div :class="$style.search">
+              <div class="">
+                <input ref="searchComentsInput" autofocus @input="searchInput" v-model="searchTerm" placeholder="Поиск" type="text">
+              </div>
+            </div>
+            <div v-if="!coments.total" class="">
+              <p class="mb-10">Коментарии отсутствуют</p>
+            </div>
+            <div v-show="!loadingComents" class="">
+              <coment @deleteComent="deleteComent" v-for="(item, index) in coments.data" :key="index" :index="index" :coment="item"/>
+            </div>
+            <paginate
+            v-show="!loadingComents && coments.total >= paramsComents.perPage"
+            :page-count="pageCount"
+            :click-handler="changePage"
+            :prev-text="'<'"
+            :next-text="'>'"
+            :container-class="'pagination'"
+            ></paginate>
           </div>
-        </div>
-        
-        <div class="input checkbox">
-          <label>
-            <span class="label">
-              Является товаром
-            </span>
-            <input v-model="isProduct" type="checkbox">
-          </label>
-        </div>
-        <div v-if="isProduct" class="input">
-          <label>
-            <span class="label">
-              Количество
-            </span>
-            <input v-model="formData.count" type="text">
-          </label>
-        </div>
-        <div v-if="isProduct" class="input">
-          <label>
-            <span class="label">
-              Цена
-            </span>
-            <input v-model="formData.price" type="text">
-          </label>
         </div>
 
-        <!-- <div class="input image">
-          <label>
-            <span class="label">
-              
-            </span>
-            <input multiple @change="changeImages" type="file">
-          </label>
-        </div> -->
-        <div v-if="item.section_id !== 2" class="input image">
-          <span>Фотографии</span>
-          <vue-upload-multiple-image
-          :maxImage="10"
-          class="mb-15"
-          :showEdit="false"
-          markIsPrimaryText=""
-          markIsPrimaryText=""
-          dropText="Перетащите картинку сюда"
-          dragText="Перетащите картинку сюда"
-          browseText="Выбрать картинку"
-          :showPrimary="false"
-          @upload-success="uploadImageSuccess"
-          @before-remove="beforeRemove"
-          :data-images="imagesPreview"
-          ></vue-upload-multiple-image>
-          <div v-if="showImagesValidate" class="errors validation-error">
-            {{ v$.imagesPreview.$errors[0].$message }}
-          </div>
-        </div>
-        <div class="mb-15">
-          <span class="mb-15">
-            Теги
-          </span>
-          <multiselect 
-          class="mt-15 mb-5"
-          v-model="formData.tags" 
-          :options="tags" 
-          label="name"
-          track-by="id"
-          :multiple="true"/>
-          <div v-if="showTagsValidate" class="errors validation-error">
-            {{ v$.tags.$errors[0].$message }}
-          </div>
         </div>
         
-        <div class="mb-15" v-if="showMusic && canChangeCard" >
-          <inputFile dir="uploaded-files"  @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-5"></inputFile>
-          <div v-if="v$.audioBasket.$errors[0]" class="errors validation-error">
-            {{ v$.audioBasket.$errors[0].$message }}
-          </div>
-        </div>
-        <div v-else class="mb-15">
-          <p v-for="(item, index) in audioBasket">
-            {{ item.title }}
-          </p>
-        </div>
-        <div class="mb-15" v-if="showVideo" >
-          <inputFile dir="uploaded-files"  @changeFiles="changeVideo" accept="video/*"  @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-5"></inputFile>
-          <div v-if="v$.videoBasket.$errors[0]" class="errors validation-error">
-            {{ v$.videoBasket.$errors[0].$message }}
-          </div>
-        </div>
-        
-        <!-- <editor/> -->
-
-        <div class="editor">
-          <span class="mb-10">Описание</span>
-          <div v-if="showEditorValidate" class="mb-10 errors validation-error">
-            {{ v$.text.$errors[0].$message }}
-          </div>
-          <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.text" />
-          <div class="editor-preview" v-html="formData.text">
-        </div>
-        
-        </div>
-      </div>
 
       <button v-if="canChangeCard" @click.prevent="submit" :class="$style.btn_submit" class="submit btn">
         Сохранить
@@ -171,14 +200,16 @@ import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, helpers } from '@vuelidate/validators'
 import { ref, reactive, onMounted, watch,  useContext, computed, nextTick } from '@nuxtjs/composition-api';
 import VueUploadMultipleImage from 'vue-upload-multiple-image';
-import Multiselect from 'vue-multiselect'
+import Multiselect from 'vue-multiselect';
+import Paginate from 'vuejs-paginate';
 // import Editor from 'vue-editor-js/src/Editor.vue'
 export default {
   name: 'section-edit',
   components: {
     VueUploadMultipleImage,
     Multiselect,
-    DatePicker
+    DatePicker,
+    Paginate
     // Editor
   },
   setup() {
@@ -199,6 +230,14 @@ export default {
       tags: [],
       show_in_main: false
     })
+    const paramsComents = ref({
+      card_id: +route.value.params.id,
+      user_id: null, 
+      searchField: '', 
+      page: 1, 
+      count: 10,
+      perPage: 10
+    })
     const formData = ref({
       ...item.value
     })
@@ -218,29 +257,27 @@ export default {
         $each: {
           required
         }
-      },
-      text: { 
-        required: helpers.withMessage('Введите описание', required),
-        minLength: helpers.withMessage(
-          ({}) => `Введите минимум 50 симврорв`,
-          minLength(50)
-        )
-      },
+      }
     })
     const isProduct = ref(false)
     const tags = ref([])
     const valueMultiSelect = ref([])
     const optionsMultiselect = ref([])
     const changedFIle = ref({})
+    const searchTerm = ref('')
     const imageUploaded = ref([])
     const imagesPreview = ref([])
     const uploadedFiles = ref([])
     const videoBasket = ref([])
     const audioBasket = ref([])
+    const coments = ref([])
+    const searchComentsInput = ref(null)
+    const loadingComents = ref(false)
     const getSections = async () => {
       loading.value = true
       getTags()
       const data = await store.dispatch(`cards/getCard`, route.value.params.id)
+      await getComents()
       item.value = data
       optionsMultiselect.value = item.value.tags
       formData.value = {
@@ -261,7 +298,7 @@ export default {
       loading.value = false
     }
     const editorToolbar = ref(
-      [["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }],
+      [["bold", "italic", "underline"], ["link"], [{ list: "ordered" }, { list: "bullet" }],
       [{ align: "left" }, { align: "center" }, { align: "right"}, { align: "justify"}],
       [{ color: "color-picker" }]],
     )
@@ -478,7 +515,6 @@ export default {
       loading.value = state
     }
     const initRules = () => {
-      console.log(item.value.section_id)
       if (showMusic.value) {
         console.log('is music')
         rules.audioBasket = {
@@ -536,6 +572,33 @@ export default {
     const canChangeCard = computed(() => {
       return store.state?.login?.ability?.find(ability => ability.id === 6)?.hasUser || store.state?.login?.author?.id === formData.value.author_id || store.state?.login?.ability?.find(ability => ability.id === 12)?.hasUser
     })
+    const deleteComent = async (id, index) => {
+      console.log(id)
+      loading.value = true
+      await store.dispatch('cards/deleteComent', id)
+      coments.value.data.splice(index,1)
+      console.log(id, index)
+      loading.value = false
+    }
+    const pageCount = computed(() => {
+      return Math.ceil(coments.value.total/paramsComents.value.perPage)
+    })
+    const getComents = async () => {
+      loadingComents.value = true
+      const comentsData = await store.dispatch(`cards/getComments`, paramsComents.value)
+      coments.value = comentsData
+      loadingComents.value = false
+      // console.log(searchComentsInput.value)
+      // searchComentsInput.value.focus()
+    }
+    const changePage = (newPage) => {
+      paramsComents.value.page = newPage
+      getComents()
+    }
+    const searchInput = () => {
+      paramsComents.value.searchField = unescape(encodeURIComponent(searchTerm.value)) 
+      getComents()
+    }
     onMounted(() => {
       getSections()
     })
@@ -579,7 +642,17 @@ export default {
       showImagesValidate,
       deleteCard,
       canDeleteCard,
-      canChangeCard
+      canChangeCard,
+      paramsComents,
+      coments,
+      deleteComent,
+      pageCount,
+      changePage,
+      getComents,
+      searchInput,
+      searchTerm,
+      loadingComents,
+      searchComentsInput
       // configEditor
     }
   }
@@ -598,6 +671,19 @@ export default {
   }
   .btn_submit {
     margin-top: 5rem;
+  }
+  .search {
+    width: 100%;
+    margin-bottom: 1rem;
+    input {
+      width: 100%;
+      font-size: 1.6rem;
+      background-color: transparent;
+      border: 0;
+      border-bottom: 2px solid #ccc;
+      padding: 1rem;
+      outline: none;
+    }
   }
   .head {
     display: flex;

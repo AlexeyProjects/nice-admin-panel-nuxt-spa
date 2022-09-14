@@ -51,6 +51,26 @@ export const actions = {
       this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
     }
   },
+  async deleteComent ({ commit }, params) {
+    try {
+      const res = await this.$axios.get(`deleteComment/${params}`)
+      this.$toast.success(`Комантарий ${params.id} успешно удален`, { position: 'bottom-center', icon: false, duration: 2000 })
+      return res.data.data
+    } catch (e) {
+      console.log(e.message)
+      this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
+    }
+  },
+  async getComments ({ commit }, params) {
+    try {
+      const res = await this.$axios.post(`commentSearch`, params)
+      // this.$toast.success('Карточка успешно удалена', { position: 'bottom-center', icon: false, duration: 2000 })
+      return res.data.data
+    } catch (e) {
+      console.log(e.message)
+      this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
+    }
+  },
 }
 
 
