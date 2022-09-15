@@ -53,14 +53,14 @@
             <input @change="changeAbility(item)" type="checkbox" v-model="item.hasUser">
           </label>
         </div>
-        <div class="input checkbox">
+        <!-- <div class="input checkbox">
           <label>
             <span class="label">
               Является автором
             </span>
             <input @change="stateAuthor()" v-model="isAuthor" type="checkbox">
           </label>
-        </div>
+        </div> -->
         <button @click.prevent="submit" class="btn">
           Сохранить
         </button>

@@ -20,6 +20,9 @@ export const actions = {
   async addTag ({ commit }, params) {
     try {
       const res = await this.$axios.post('addNewTag', params)
+      this.$router.push({
+        path: `/tags/${res.data.data.id}`
+      })
       return res.data.data
     } catch (e) {
       console.log(e)
@@ -29,6 +32,9 @@ export const actions = {
     try {
       const res = await this.$axios.get(`deleteTag/${params}`)
       this.$toast.success('Тег успешно удален', { position: 'bottom-center', icon: false, duration: 2000 })
+      this.$router.push({
+        path: '/tags'
+      })
       return res.data.data
     } catch (e) {
       console.log(e)

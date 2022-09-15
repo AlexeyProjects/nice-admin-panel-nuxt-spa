@@ -36,23 +36,23 @@ export default {
     const router = useRouter()
     const columns = ref([
       {
+        label: 'ID',
+        field: 'id',
+        type: 'text'
+      },
+      {
         label: 'Имя',
-        field: 'nickname',
+        field: 'name',
         type: 'text'
       },
       {
-        label: 'Телефон',
-        field: 'phone',
+        label: 'Кол-во карточек',
+        field: 'items_number',
         type: 'text'
       },
       {
-        label: 'Email',
-        field: 'email',
-        type: 'text'
-      },
-      {
-        label: 'Заметка',
-        field: 'note',
+        label: 'Кол-во лайков',
+        field: 'like_number',
         type: 'text'
       }
     ])
@@ -76,7 +76,7 @@ export default {
     const sections = ref([])
     const editRow = (params) => {
       router.push({
-        path: `/users/${params.row.id}`,
+        path: `/users/authors/${params.row.id}`,
         query: { title: params.row.title }
       })
     }
@@ -86,7 +86,7 @@ export default {
     }
     const getSections = async () => {
       loading.value = true
-      const data = await store.dispatch('users/getUsers', paramsSearch.value)
+      const data = await store.dispatch('author/getAuthors', paramsSearch.value)
       sections.value = data
       tableOptions.value.dataTable = sections.value.data
       tableOptions.value.totalRows = sections.value.total

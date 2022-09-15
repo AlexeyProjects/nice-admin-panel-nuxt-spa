@@ -45,6 +45,19 @@
               <input v-model="formData.email" readonly type="text"/>
             </label>
           </div>
+          <div class="">
+            <div class="mb-15">
+              <multiselect 
+              class="mt-15 mb-5"
+              v-model="formData.group" 
+              :options="groups"
+              noOptions="Список пустой"
+              label="name"
+              @select="changeGroup"
+              placeholder="Фильтрация по группам"
+              track-by="id"/>
+            </div>
+          </div>
           <div class="input">
             <label for="">
               <span class="label">
@@ -85,20 +98,27 @@
 
 <script>
 import { ref, reactive, onMounted, computed, useContext } from '@nuxtjs/composition-api';
+import Multiselect from 'vue-multiselect'
+
 export default {
   name: 'section-edit',
+  components: {
+    Multiselect
+  },
   setup() {
     const { store, route, $toast } = useContext()
     const loading = ref(false)
     const formData = ref({
 
     })
+    const groups = ref([])
     const isAuthor = ref(false)
     const abilities = ref({})
     const item = ref({})
     const getSections = async () => {
       loading.value = true
       const data = await store.dispatch('users/getUsers')
+      console.log(data.data)
       item.value = data.data.find(item => item.id == route.value.params.id)
       const abilitiesData = await store.dispatch('users/getAbilities', item.value.id )
       abilities.value = abilitiesData.data
@@ -132,8 +152,29 @@ export default {
     const canChangeStatus = computed(() => {
       return store.state?.login?.ability?.find(ability => ability.id === 8)?.hasUser
     })
+    const getGroups = async () => {
+      loading.value = true
+      const paramsSearchGroups = {
+      entity: 'groups',
+      searchField: '',
+      page: 1,
+      count: 9999
+    }
+      const data = await store.dispatch('tags/getTags', paramsSearchGroups)
+      groups.value = data.data
+      loading.value = false
+    }
+    const changeGroup = async (selectedOption, id) => {
+      console.log(selectedOption, id)
+      const data = {
+        user_id: +route.value.params.id,
+        group_id: selectedOption.id
+      }
+      await store.dispatch('groups/changeGroup', data)
+    }
     onMounted(() => {
       getSections()
+      getGroups()
     })
     return {
       formData,
@@ -143,7 +184,10 @@ export default {
       submit,
       abilities,
       changeAbility,
-      canChangeStatus
+      canChangeStatus,
+      getGroups,
+      groups,
+      changeGroup
     }
   }
 }

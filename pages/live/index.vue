@@ -210,7 +210,7 @@ export default {
         }
       }
       if (imagesPreview.value.length === 0 ) {
-        basketFiles = [474]
+        basketFiles = [3]
       }
       if (mode.value === 'edit' && imagesPreview.value[0].uploadedApi) {
         basketFiles = [imagesPreview.value[0].id]

@@ -4,7 +4,7 @@
     v-if="loading"
     />
     <div
-    v-else
+    v-show="!loading"
     class="">
       <form action="">
         <div class="main">
@@ -13,12 +13,9 @@
               <button @click.prevent="$router.push('/users/authors')" class="btn back">
                 Назад
               </button>
-              <div :class="$style.title">
-                
-              </div>
             </div>
             <div :class="$style.rightpanel">
-              <!-- <button @click.prevent="deleteTag" class="btn red">Удалить</button>  -->
+              <button @click.prevent="deleteAuthor" class="btn red">Удалить</button> 
             </div>
           </div>
           <div class="input">
@@ -65,8 +62,7 @@
             </div>
           </div>
         </div>
-
-        <button @click.prevent="submit" class="btn">
+        <button :class="$style.btn_submit" @click.prevent="submit" class="submit btn">
           Сохранить
         </button>
       </form>
@@ -79,16 +75,16 @@
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, helpers } from '@vuelidate/validators'
 import VueUploadMultipleImage from 'vue-upload-multiple-image';
-import { ref, reactive, onMounted, useContext, computed } from '@nuxtjs/composition-api';
-
+import { ref, reactive, computed, onMounted, useContext } from '@nuxtjs/composition-api';
 export default {
   name: 'section-edit',
   components: {
     VueUploadMultipleImage
   }, 
   setup() {
-    const { store, route, $toast, $axios } = useContext()
+    const { store, route, $toast } = useContext()
     const loading = ref(false)
+    const tag = ref({})
     const formData = ref({
       name: '',
       description: '',
@@ -106,9 +102,30 @@ export default {
         }
       }
     })
-    v$.value = useVuelidate(rules, formData.value)
     const imagesPreview = ref([])
+    const paramsSearch = ref({
+      entity: 'tags',
+      searchField: '',
+      page: 1,
+      count: 9999
+    })
     const item = ref({})
+    const deleteAuthor = async () => {
+      loading.value = true
+      const response = await store.dispatch('author/deleteAuthor', +route.value.params.id)
+      loading.value = false
+    }
+    const getAuthor = async () => {
+      loading.value = true
+      const response = await store.dispatch('author/getAuthor', +route.value.params.id)
+      item.value = response
+      formData.value = {
+        ...item.value
+      }
+      imagesLoadForPreview()
+      v$.value = useVuelidate(rules, formData.value)
+      loading.value = false
+    }
     const submit = async () => {
       v$.value.$touch()
       if (v$.value.$invalid) {
@@ -133,7 +150,8 @@ export default {
       }
       await processArray(imagesPreview.value)
       const data = {
-        mode: 'add',
+        mode: 'edit',
+        id: formData.value.id,
         name: formData.value.name,
         description: formData.value.description,
         avatar_id: basketFiles[0]
@@ -141,6 +159,24 @@ export default {
       loading.value = true
       const response = await store.dispatch('author/addAuthor', data)
       loading.value = false
+    }
+    const imagesLoadForPreview = () => {
+      let imagesArray = []
+      if (item.value.avatar) {
+        const onlyImage = [item.value.avatar]
+        onlyImage.forEach(image => {
+          imagesArray.push({
+            id: image.id,
+            path: 'https://test.itisthenice.com/'+image.src,
+            default: 1,
+            highlight: 1,
+            uploadedApi: true,
+            caption: 'caption to display. receive', // Optional
+          })
+        })
+        imagesPreview.value = imagesArray
+        formData.value.imagesPreview = imagesArray
+      }  
     }
     const saveImage = async (file) => {
       var formData = new FormData();
@@ -191,13 +227,17 @@ export default {
       return v$.value?.imagesPreview?.$errors[0]
     })
     onMounted(() => {
-
+      getAuthor()
     })
     return {
       formData,
       item,
       loading,
       submit,
+      tag,
+      deleteAuthor,
+      paramsSearch,
+      getAuthor,
       uploadImageSuccess,
       beforeRemove,
       imagesPreview,
@@ -207,7 +247,8 @@ export default {
       rules,
       v$,
       showDescValidate,
-      showNameValidate
+      showNameValidate,
+      imagesLoadForPreview
     }
   }
 }

@@ -174,6 +174,9 @@ export default {
         case 'rejected' :
           data.status.status_name = 'Отменено'
           break
+        case 'gotByClient' :
+            item.status_name = 'Получено'
+            break
       }
       statuses.value.forEach(item => {
         switch (item.status_name) {
@@ -197,6 +200,9 @@ export default {
             break
           case 'rejected' :
             item.status_name = 'Отменено'
+            break
+          case 'gotByClient' :
+            item.status_name = 'Получено'
             break
         }
       })

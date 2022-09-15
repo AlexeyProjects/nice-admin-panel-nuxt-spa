@@ -138,12 +138,55 @@ a {
     right: 0;
   }
 }
+.filter-input {
+  display: flex;
+  .fill {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  svg {
+    margin-left: 1rem;
+  }
+}
 .input {
   display: flex;
   flex-direction: column;
   width: 30rem;
   max-width: 100%;
   margin-bottom: 1rem;
+  &.search {
+    position: relative;
+    .removeAuthor {
+      width: 2rem;
+      height: 2rem;
+      position: absolute;
+      top: 3.3rem;
+      right: .5rem;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    input {
+      padding-right: 2rem;
+    }
+    .list {
+      width: 100%;
+      position: absolute;
+      top: 6rem;
+      left: 0;
+      background-color: #fff;
+      z-index: 10;
+      &-item {
+        padding: .5rem 1rem;
+        transition: .2s;
+        &:hover {
+          cursor: pointer;
+          background-color: #ccc;
+        }
+      }
+    }
+  }
   span {
     margin-bottom: .5rem;
   }

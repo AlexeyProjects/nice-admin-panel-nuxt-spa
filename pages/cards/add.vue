@@ -30,6 +30,26 @@
               {{ v$.title.$errors[0].$message }}
             </div>
           </div>
+          <div v-click-outside="closeAuthorList" class="input search">
+            <label for="">
+              <span class="label">
+                Автор
+              </span>
+              <input @input="searchAuthor" @focus="showAuthorSearch = true" v-model="searchAuthorTerm"  type="text">
+            </label>
+            <svg class="removeAuthor" @click="removeChoosedAuthor" xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg>
+            <div v-if="showAuthorSearch" class="list">
+              <div v-if="!authorSearchItems.length" class="list-item">
+                Ничего не найдено
+              </div>
+              <div @click="chooseAuthor(item)" v-for="(item, index) in authorSearchItems" :key="index" class="list-item">
+                {{ item.name }}
+              </div>
+            </div>
+            <div v-if="v$.title.$errors[0] && v$.title" class="errors">
+              {{ v$.title.$errors[0].$message }}
+            </div>
+          </div>
           <div class="input checkbox">
             <label>
               <span class="label">
@@ -121,6 +141,7 @@
             </div>
           </div>
           
+          
           <div class="mb-15" v-if="showMusic" >
             <inputFile dir="uploaded-files"  @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-5"></inputFile>
             <div v-if="v$.audioBasket.$errors[0]" class="errors validation-error">
@@ -138,16 +159,16 @@
           <div class="editor mb-15">
             <span class="mb-10">Краткое описание</span>
             <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.text" />
-            <div class="editor-preview" v-html="formData.text">
-          </div>
+            <!-- <div class="editor-preview" v-html="formData.text">
+          </div> -->
           
           </div>
 
           <div class="editor">
             <span class="mb-10">Описание</span>
-            <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.text" />
-            <div class="editor-preview" v-html="formData.text">
-          </div>
+            <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.subtitle" />
+            <!-- <div class="editor-preview" v-html="formData.text">
+          </div> -->
           
           </div>
         </div>
@@ -175,17 +196,22 @@ import { ref, reactive, onMounted, useContext, useRouter, computed, nextTick } f
 import VueUploadMultipleImage from 'vue-upload-multiple-image';
 import Multiselect from 'vue-multiselect'
 import PopupSection from '~/components/PopupSection/index.vue';
+import vClickOutside from 'v-click-outside'
 // import Editor from 'vue-editor-js/src/Editor.vue'
 export default {
   name: 'section-edit',
   components: {
     VueUploadMultipleImage,
     Multiselect,
-    DatePicker
+    DatePicker,
+    vClickOutside
     // Editor
     ,
     PopupSection
-},
+  },
+  directives: {
+      clickOutside: vClickOutside.directive
+  },
   setup() {
     const { store, route, $toast, $axios } = useContext()
     const router = useRouter()
@@ -199,6 +225,9 @@ export default {
     const tags = ref([])
     const valueMultiSelect = ref([])
     const optionsMultiselect = ref([])
+    const searchAuthorTerm = ref('')
+    const authorSearchItems = ref('')
+    const showAuthorSearch = ref(false)
     const item = ref(
         {
             title: '',
@@ -208,6 +237,7 @@ export default {
             price: 0,
             count: 0,
             imagesPreview: [],
+            subtitle: '',
             audioBasket: [],
             videoBasket: [],
             date_event: null,
@@ -233,6 +263,13 @@ export default {
           required
         }
       },
+      imagesPreview: { 
+        required: helpers.withMessage('Выберите минимум 1 картинку', required),
+        minLength: minLength(1),
+        $each: {
+          required
+        }
+      }
     })
     const changedFIle = ref({})
     const imageUploaded = ref([])
@@ -240,6 +277,7 @@ export default {
     const videoBasket = ref([])
     const audioBasket = ref([])
     const datePicker = ref(null)
+    const choosedAuthor = ref({})
     var v$ = ref({})
     const getSections = async () => {
       loading.value = true
@@ -347,7 +385,8 @@ export default {
           title: formData.value.title,
           text: formData.value.text,
           fileIds: basketFiles,
-          author_id: 72,
+          author_id: choosedAuthor.value.id,
+          subtitle: formData.value.subtitle,
           item_type_id: 1,
           price: +formData.value.price,
           count: +formData.value.count,
@@ -365,7 +404,7 @@ export default {
       }
       const response = await store.dispatch(`cards/saveCard`, data)
       console.log(response)
-      const newId = response[0].id
+      const newId = response.id
       router.push({
         path: `/cards/${newId}`
       })
@@ -479,7 +518,7 @@ export default {
     }
     const loadingFile = (state) => {
       console.log(state)
-      loading.value = state
+      loading.value = state 
     }
     const showAddCard = (choosedSection) => {
       showChooseSection.value = false
@@ -501,6 +540,27 @@ export default {
       }
       console.log(v$.value)
       console.log(rules)
+    }
+    const searchAuthor = async () => {
+      const paramsAuthorSearch = {
+        searchField: searchAuthorTerm.value,
+        page: 1,
+        count: 10,
+        order_by_column: '',
+        order_by_mode: '',
+      }
+      const res = await store.dispatch('author/getAuthors', paramsAuthorSearch)
+      console.log(res.data)
+      
+      if (res.data) {
+        showAuthorSearch.value = true
+      } else {
+        // showAuthorSearch.value = false
+      }
+      // if (searchAuthorTerm.value === '') {
+      //   showAuthorSearch.value = false
+      // }
+      authorSearchItems.value = res.data
     }
     const initRules = () => {
       console.log(item.value.section_id)
@@ -534,6 +594,21 @@ export default {
       
     }
     const todayDate = ref(new Date().toISOString().split("T")[0])
+    const closeAuthorList = () => {
+      console.log('close')
+      showAuthorSearch.value = false
+    }
+    const chooseAuthor = (item) => {
+      choosedAuthor.value = item
+      searchAuthorTerm.value = item.name
+      closeAuthorList()
+    }
+    const removeChoosedAuthor = (item) => {
+      console.log('remoe')
+      searchAuthorTerm.value = ''
+      choosedAuthor.value = {}
+      showAuthorSearch.value = false
+    }
     onMounted(() => {
       // getSections()
       showingChooseSection()
@@ -579,7 +654,15 @@ export default {
       rules,
       v$,
       datePicker,
-      todayDate
+      todayDate,
+      searchAuthor,
+      searchAuthorTerm,
+      authorSearchItems,
+      closeAuthorList,
+      showAuthorSearch,
+      chooseAuthor,
+      choosedAuthor,
+      removeChoosedAuthor
       // configEditor
     }
   }
