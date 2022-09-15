@@ -14,9 +14,9 @@
       </div>
     </div>
     <div class="filter-input">
-      <div class="mb-15 fill">
+      <div class="fill">
         <multiselect 
-        class="mt-15 mb-5"
+        class=""
         v-model="paramsSearch.group_id" 
         :options="groups"
         noOptions="Список пустой"
