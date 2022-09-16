@@ -9,7 +9,7 @@
       <form action="">
         <div class="main">
           <div :class="$style.head" class="head mb-20">
-            <div :class="$style.leftpanel">
+            <div class="" :class="$style.leftpanel">
               <button @click.prevent="$router.push('/orders')" class="btn back">
                 Назад
               </button>
@@ -278,13 +278,14 @@ export default {
   }
   .leftpanel {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     margin-right: 2rem;
+    margin-bottom: 1.5rem;
   }
   .rightpanel {
     display: flex;
-    width: -webkit-fill-available;
     overflow: auto;
+    
     white-space: nowrap;
     @media (max-width: 768px) {
       font-size: 1.4rem;
@@ -297,6 +298,7 @@ export default {
   .head {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
   .content {
     display: flex;
