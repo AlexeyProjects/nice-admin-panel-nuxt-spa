@@ -140,6 +140,44 @@
               {{ v$.tags.$errors[0].$message }}
             </div>
           </div>
+          <div class="input">
+            <label for="">
+              <span class="label">
+                SEO заголовок
+              </span>
+              <input v-model="formData.seo_title" type="text">
+            </label>
+            <div class="">
+            </div>
+          </div>
+          <div class="input">
+            <label for="">
+              <span class="label">
+                SEO описание
+              </span>
+              <input v-model="formData.seo_description" type="text">
+            </label>
+            <div class="">
+            </div>
+          </div>
+          <div class="input image">
+            <span>SEO image</span>
+            <vue-upload-multiple-image
+            :maxImage="1"
+            class="mb-15"
+            :showEdit="false"
+            markIsPrimaryText=""
+            dir="seos"
+            label="seo"
+            dropText="Перетащите картинку сюда"
+            dragText="Перетащите картинку сюда"
+            browseText="Выбрать картинку"
+            :showPrimary="false"
+            @upload-success="uploadImageSuccessSEO"
+            @before-remove="beforeRemoveSEO"
+            :data-images="imagesPreviewSEO"
+            ></vue-upload-multiple-image>
+          </div>
           
           
           <div class="mb-15" v-if="showMusic" >
@@ -227,6 +265,7 @@ export default {
     const optionsMultiselect = ref([])
     const searchAuthorTerm = ref('')
     const authorSearchItems = ref('')
+    const imagesPreviewSEO = ref([])
     const showAuthorSearch = ref(false)
     const item = ref(
         {
@@ -388,6 +427,8 @@ export default {
           author_id: choosedAuthor.value.id,
           subtitle: formData.value.subtitle,
           item_type_id: 1,
+          seo_title: formData.value.seo_title,
+          seo_description: formData.value.seo_description,
           price: +formData.value.price,
           count: +formData.value.count,
           date_event: null,
@@ -412,14 +453,25 @@ export default {
       // $toast.success('Информация сохранена', { position: 'bottom-center', icon: false, duration: 2000 })
     }
     const uploadImageSuccess = (formDataFrom, index, fileList) => {
+      console.log('default')
       formData.value.imagesPreview = fileList
       imagesPreview.value = fileList 
+    }
+
+    const uploadImageSuccessSEO = (formData, index, fileList) => {
+      imagesPreviewSEO.value = fileList 
     }
 
     const beforeRemove = (index, done, fileList) => {
       const item = fileList[index]
       imagesPreview.value.splice(index, 1);
       formData.value.imagesPreview.splice(index, 1);
+    }
+
+    const beforeRemoveSEO = (index, done, fileList) => {
+      const item = fileList[index]
+      imagesPreviewSEO.value.splice(index, 1);
+      formData.value.imagesPreviewSEO.splice(index, 1);
     }
     
     const deleteImage = async (id) => {
@@ -662,7 +714,10 @@ export default {
       showAuthorSearch,
       chooseAuthor,
       choosedAuthor,
-      removeChoosedAuthor
+      removeChoosedAuthor,
+      imagesPreviewSEO,
+      beforeRemoveSEO,
+      uploadImageSuccessSEO
       // configEditor
     }
   }

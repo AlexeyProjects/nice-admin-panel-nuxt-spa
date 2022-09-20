@@ -34,7 +34,7 @@
               <span class="label">
                 Описание
               </span>
-              <input v-model="formData.description" type="text">
+              <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.description" />
             </label>
             <div v-if="showDescValidate" class="errors validation-error">
               {{ v$.description.$errors[0].$message }}
@@ -178,6 +178,11 @@ export default {
         formData.value.imagesPreview = imagesArray
       }  
     }
+    const editorToolbar = ref(
+      [["bold", "italic", "underline"], ['link'], [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: "left" }, { align: "center" }, { align: "right"}, { align: "justify"}],
+      [{ color: "color-picker" }]],
+    )
     const saveImage = async (file) => {
       var formData = new FormData();
       formData.append("file", file);
@@ -248,7 +253,8 @@ export default {
       v$,
       showDescValidate,
       showNameValidate,
-      imagesLoadForPreview
+      imagesLoadForPreview,
+      editorToolbar
     }
   }
 }

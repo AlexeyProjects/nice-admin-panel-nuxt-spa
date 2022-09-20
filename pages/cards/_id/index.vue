@@ -67,7 +67,7 @@
                 <span class="label">
                   Дата и время
                 </span>
-                <date-picker v-model="formData.date_event" format="YYYY-MM-DD hh:mm" valueType="format" type="datetime"></date-picker>
+                <date-picker v-model="formData.date_event" format="YYYY-MM-DD HH:mm" valueType="format" type="datetime"></date-picker>
                 <!-- <input type="datetime-local" :min="new Date().toLocaleDateString('en-ca')+'T08:00'" ref="datePicker" class="date-picker-mm form-control" v-model="formData.date_event" id="date_event" name="date_event" value=""> -->
               </label>
               <div v-if="v$.date_event.$errors[0]" class="errors validation-error">
@@ -107,7 +107,7 @@
               class="mb-15"
               :showEdit="false"
               markIsPrimaryText=""
-              markIsPrimaryText=""
+              idUpload="myIdUpload"
               dropText="Перетащите картинку сюда"
               dragText="Перетащите картинку сюда"
               browseText="Выбрать картинку"
@@ -135,6 +135,46 @@
                 {{ v$.tags.$errors[0].$message }}
               </div>
             </div>
+
+            <div class="input">
+              <label for="">
+                <span class="label">
+                  SEO заголовок
+                </span>
+                <input v-model="formData.seo_title" type="text">
+              </label>
+              <div class="">
+              </div>
+            </div>
+            <div class="input">
+              <label for="">
+                <span class="label">
+                  SEO описание
+                </span>
+                <input v-model="formData.seo_description" type="text">
+              </label>
+              <div class="">
+              </div>
+            </div>
+
+            <!-- <div class="input image">
+              <span>SEO image</span>
+              <vue-upload-multiple-image
+              :maxImage="1"
+              class="mb-15"
+              :showEdit="false"
+              markIsPrimaryText=""
+              idUpload="myIdUpload"
+              idEdit="myIdUpload"
+              dropText="Перетащите картинку сюда"
+              dragText="Перетащите картинку сюда"
+              browseText="Выбрать картинку"
+              :showPrimary="false"
+              @upload-success="uploadImageSuccessSEO"
+              @before-remove="beforeRemoveSEO"
+              :data-images="imagesPreviewSEO"
+              ></vue-upload-multiple-image>
+            </div> -->
             
             <div class="mb-15" v-if="showMusic && canChangeCard" >
               <inputFile dir="uploaded-files"  @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-5"></inputFile>
@@ -149,8 +189,29 @@
             </div>
             <div class="mb-15" v-if="showVideo" >
               <inputFile dir="uploaded-files"  @changeFiles="changeVideo" accept="video/*"  @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-5"></inputFile>
-              <div v-if="v$.videoBasket.$errors[0]" class="errors validation-error">
+              <div v-if="showVideoValidate" class="errors validation-error">
                 {{ v$.videoBasket.$errors[0].$message }}
+              </div>
+            </div>
+            <div v-if="showVideo" class="input image">
+              <span>Preview к видео</span>
+              <vue-upload-multiple-image
+              :maxImage="1"
+              class="mb-15"
+              :showEdit="false"
+              markIsPrimaryText=""
+              markIsPrimaryText=""
+              idUpload="previewVideo"
+              dropText="Перетащите картинку сюда"
+              dragText="Перетащите картинку сюда"
+              browseText="Выбрать картинку"
+              :showPrimary="false"
+              @upload-success="uploadImageSuccess"
+              @before-remove="beforeRemove"
+              :data-images="imagesPreview"
+              ></vue-upload-multiple-image>
+              <div v-if="showImagesValidate" class="errors validation-error">
+                {{ v$.imagesPreview.$errors[0].$message }}
               </div>
             </div>
             
@@ -305,6 +366,7 @@ export default {
     const searchComentsInput = ref(null)
     const loadingComents = ref(false)
     const choosedAuthor = ref({})
+    const imagesPreviewSEO = ref([])
     const getSections = async () => {
       loading.value = true
       getTags()
@@ -319,6 +381,7 @@ export default {
         videoBasket: []
       }
       imagesLoadForPreview()
+      imagesLoadForPreviewSEO()
       filterVideo()
       filterAudio()
       initRules()
@@ -354,6 +417,22 @@ export default {
         imagesPreview.value = imagesArray
       }  
     }
+    const imagesLoadForPreviewSEO = () => {
+      console.log('seo')
+      let imagesArray = []
+      if (item.value.seo_file_id) {
+          imagesArray.push({
+            id: item.value.seo_file_id,
+            path: 'https://test.itisthenice.com/'+item.value.seo_file.src,
+            default: 1,
+            highlight: 1,
+            uploadedApi: true,
+            caption: 'caption to display. receive', // Optional
+          })
+        imagesPreviewSEO.value = imagesArray
+        console.log()
+      }  
+    }
     const audioLoadForPreview = () => {
       
     }
@@ -387,6 +466,7 @@ export default {
       }
       loading.value = true
       var basketFiles = []
+      var basketFilesSEO = []
       async function processArray(array) {
         for (const item of array) {
           if (item.uploadedApi) {
@@ -401,7 +481,22 @@ export default {
           }
         }
       }
+      async function processArraySEO(array) {
+        for (const item of array) {
+          if (item.uploadedApi) {
+            basketFilesSEO.push(item.id)
+          }
+          if (!item.uploadedApi) {
+            const file = dataURLtoFile(item.path, item.name)
+            const uploadedFile = await saveImage(file)
+            .then((res) => {
+              basketFilesSEO.push(res.id)
+            })
+          }
+        }
+      }
       await processArray(imagesPreview.value)
+      await processArraySEO(imagesPreviewSEO.value)
       audioBasket.value.forEach(item => {
         basketFiles.push(item.id)
       })
@@ -416,6 +511,7 @@ export default {
         formData.value.price = 0
         formData.value.count = 0
       }
+      console.log(basketFilesSEO)
       const data = {
         mode: "edit",
         data: {
@@ -426,6 +522,9 @@ export default {
           author_id: choosedAuthor.value.id,
           subtitle: formData.value.subtitle,
           item_type_id: formData.value.item_type_id,
+          seo_title: formData.value.seo_title,
+          seo_description: formData.value.seo_description,
+          seo_file_id: null,
           price: formData.value.price,
           count:formData.value.count,
           price: formData.value.price,
@@ -451,6 +550,10 @@ export default {
     const uploadImageSuccess = (formData, index, fileList) => {
       imagesPreview.value = fileList 
     }
+    const uploadImageSuccessSEO = (formData, index, fileList) => {
+      console.log('seo')
+      imagesPreviewSEO.value = fileList 
+    }
     const searchAuthor = async () => {
       const paramsAuthorSearch = {
         searchField: searchAuthorTerm.value,
@@ -474,7 +577,12 @@ export default {
     }
     const beforeRemove = (index, done, fileList) => {
       const item = fileList[index]
-      imagesPreview.value.splice(index, 1);
+      imagesPreviewSEO.value.splice(index, 1);
+      
+    }
+    const beforeRemoveSEO = (index, done, fileList) => {
+      const item = fileList[index]
+      imagesPreviewSEO.value.splice(index, 1);
       
     }
     const closeAuthorList = () => {
@@ -626,6 +734,9 @@ export default {
     const showImagesValidate = computed(() => {
       return v$.value?.imagesPreview?.$errors[0]
     })
+    const showVideoValidate = computed(() => {
+      return v$.value?.audioBasket?.$errors[0]
+    })
     const deleteCard = async () => {
       loading.value = true
       await store.dispatch('cards/deleteCard', +route.value.params.id)
@@ -638,6 +749,11 @@ export default {
       console.log(first, second)
       formData.value.imagesPreview = first
       console.log(formData.value.imagesPreview)
+    });
+    watch(() => imagesPreviewSEO.value, (first, second) => {
+      console.log(first, second)
+      formData.value.imagesPreviewSEO = first
+      console.log(formData.value.imagesPreviewSEO)
     });
     const canChangeCard = computed(() => {
       return store.state?.login?.ability?.find(ability => ability.id === 6)?.hasUser || store.state?.login?.author?.id === formData.value.author_id || store.state?.login?.ability?.find(ability => ability.id === 12)?.hasUser
@@ -734,7 +850,13 @@ export default {
       showAuthorSearch,
       chooseAuthor,
       choosedAuthor,
-      removeChoosedAuthor
+      removeChoosedAuthor,
+      imagesPreviewSEO,
+      beforeRemoveSEO,
+      imagesLoadForPreviewSEO,
+      uploadImageSuccessSEO,
+      showVideoValidate
+
       // configEditor
     }
   }

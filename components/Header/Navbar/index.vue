@@ -56,6 +56,12 @@ export default {
         url: '/wires',
         icon: 'IconsHeaderWires',
         show: true
+      },
+      {
+        title: 'SEO',
+        url: '/seo',
+        icon: 'IconsHeaderSeo',
+        show: true
       }
     ])
     const canManageLive = computed(() => {

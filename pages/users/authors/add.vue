@@ -37,7 +37,7 @@
               <span class="label">
                 Описание
               </span>
-              <input v-model="formData.description" type="text">
+              <VueEditor class="editor-container" :editorToolbar="editorToolbar" v-model="formData.description" />
             </label>
             <div v-if="showDescValidate" class="errors validation-error">
               {{ v$.description.$errors[0].$message }}
@@ -107,6 +107,11 @@ export default {
       }
     })
     v$.value = useVuelidate(rules, formData.value)
+    const editorToolbar = ref(
+      [["bold", "italic", "underline"], ['link'], [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: "left" }, { align: "center" }, { align: "right"}, { align: "justify"}],
+      [{ color: "color-picker" }]],
+    )
     const imagesPreview = ref([])
     const item = ref({})
     const submit = async () => {
@@ -207,7 +212,8 @@ export default {
       rules,
       v$,
       showDescValidate,
-      showNameValidate
+      showNameValidate,
+      editorToolbar
     }
   }
 }

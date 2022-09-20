@@ -37,7 +37,7 @@
                 <div class="">
                   Пользователь
                 </div>
-                <NuxtLink :to="`/users/}`" class="default-link">
+                <NuxtLink :to="`/users/${formData.user_id}`" class="default-link">
                   {{ user.nickname }}
                 </NuxtLink>
               </div>
@@ -294,7 +294,7 @@ export default {
         
       }
     }
-  }
+  } 
   .head {
     display: flex;
     justify-content: space-between;

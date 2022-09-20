@@ -17,6 +17,7 @@ export const actions = {
     } catch (e) {
       console.log(e.message)
       this.$toast.error(`Ошибка: ${e.message}`, { position: 'bottom-center', icon: false, duration: 2000 })
+      return e
     }
   },
   async getMusic ({ commit }, params) {

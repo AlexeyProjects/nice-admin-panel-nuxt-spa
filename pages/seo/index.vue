@@ -6,28 +6,24 @@
     <div v-show="!loading" class="">
       <div :class="$style.header" class="mb-20">
         <div :class="$style.title">
-          Эфир
+          SEO
         </div>
         <div :class="$style.panel">
           <div class="mr-10">
-            {{ statusLive }}
             <!-- Статус: Включен -->
           </div>
-          <button @click.prevent="changeStatus" class="btn">
-            {{ statusLive === 'Включен' ? 'Выключить' : 'Включить' }}
-          </button>
         </div>
       </div>
       <div :class="$style.content" class="content">
         <div class="mb-15">
-          <div class="mb-15">
+          <!-- <div class="mb-15">
             {{ mode === 'add' ? 'Добавить' : 'Редактировать' }}
-          </div>
+          </div> -->
           <div :class="$style.panelContent">
             <div class="input">
               <label for="">
                 <span class="label">
-                  Название
+                  SEO заголовок
                 </span>
                 <input v-model="title" type="text">
               </label>
@@ -35,7 +31,18 @@
                 {{ v$.title.$errors[0].$message }}
               </div> -->
             </div>
-            <div class="input image">
+            <div class="input">
+              <label for="">
+                <span class="label">
+                  SEO описание
+                </span>
+                <input v-model="description" type="text">
+              </label>
+              <!-- <div v-if="showTitleValidate" class="errors">
+                {{ v$.title.$errors[0].$message }}
+              </div> -->
+            </div>
+            <!-- <div class="input image">
               <span>Фотографии</span>
               <vue-upload-multiple-image
               :maxImage="1"
@@ -51,39 +58,12 @@
               @before-remove="beforeRemove"
               :data-images="imagesPreview"
               ></vue-upload-multiple-image>
-            </div>
-            <inputFile dir="broadcast" @loading="loadingFile" @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-15"></inputFile>
-            <svg v-if="mode === 'edit'" @click="rejectEdit" :class="$style.panelClose" xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg>
+            </div> -->
           </div>
           <button @click.prevent="submit" class="btn">
-            {{ mode === 'add' ? 'Добавить' : 'Редактировать' }}
+            Сохранить
           </button>
         </div>
-        <div :class="$style.list">
-          <div :class="$style.track" class="mb-15" :key="index" v-for="(item, index) in sections">
-            <div :class="$style.wraper">
-              <span class="mr-15">
-                ID:{{ item.id }}
-              </span>    
-              <img class="mr-15" :src="`https://test.itisthenice.com/${item.wrap.src}`" alt="">
-            </div>
-            <div :class="$style.audio">
-              <p class="mb-10">{{ item.title }}</p>
-              <audio controls :src="`https://test.itisthenice.com/${item.audio.src}`"></audio>
-            </div>
-            <svg @click="deleteTrack(item, index)" :class="$style.delete" xmlns="http://www.w3.org/2000/svg" fill="#D91414" viewBox="0 0 30 30" width="30px" height="30px">    <path d="M 14.984375 2.4863281 A 1.0001 1.0001 0 0 0 14 3.5 L 14 4 L 8.5 4 A 1.0001 1.0001 0 0 0 7.4863281 5 L 6 5 A 1.0001 1.0001 0 1 0 6 7 L 24 7 A 1.0001 1.0001 0 1 0 24 5 L 22.513672 5 A 1.0001 1.0001 0 0 0 21.5 4 L 16 4 L 16 3.5 A 1.0001 1.0001 0 0 0 14.984375 2.4863281 z M 6 9 L 7.7929688 24.234375 C 7.9109687 25.241375 8.7633438 26 9.7773438 26 L 20.222656 26 C 21.236656 26 22.088031 25.241375 22.207031 24.234375 L 24 9 L 6 9 z"/></svg>
-            <svg @click="editTrack(item)" :class="$style.edit" fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px">    <path d="M 22.828125 3 C 22.316375 3 21.804562 3.1954375 21.414062 3.5859375 L 19 6 L 24 11 L 26.414062 8.5859375 C 27.195062 7.8049375 27.195062 6.5388125 26.414062 5.7578125 L 24.242188 3.5859375 C 23.851688 3.1954375 23.339875 3 22.828125 3 z M 17 8 L 5.2597656 19.740234 C 5.2597656 19.740234 6.1775313 19.658 6.5195312 20 C 6.8615312 20.342 6.58 22.58 7 23 C 7.42 23.42 9.6438906 23.124359 9.9628906 23.443359 C 10.281891 23.762359 10.259766 24.740234 10.259766 24.740234 L 22 13 L 17 8 z M 4 23 L 3.0566406 25.671875 A 1 1 0 0 0 3 26 A 1 1 0 0 0 4 27 A 1 1 0 0 0 4.328125 26.943359 A 1 1 0 0 0 4.3378906 26.939453 L 4.3632812 26.931641 A 1 1 0 0 0 4.3691406 26.927734 L 7 26 L 5.5 24.5 L 4 23 z"/></svg>
-          </div>
-          <paginate
-          v-if="sections.length > 10"
-          :page-count="pageCount"
-          :click-handler="changePage"
-          :prev-text="'Пред'"
-          :next-text="'След'"
-          :container-class="'pagination'"
-          ></paginate>
-        </div>
-        
       </div>
     </div>
     
@@ -115,6 +95,7 @@ export default {
     const mode = ref('add')
     const formData = reactive({})
     const title = ref('')
+    const description = ref('')
     const columns = ref([
       {
         label: 'Название',
@@ -156,8 +137,10 @@ export default {
     }
     const getSections = async () => {
       loading.value = true
-      const data = await store.dispatch('live/getMusic', paramsSearch.value)
-      sections.value = data
+      const data = await store.dispatch('seo/getMainSeo')
+      console.log(data[0])
+      title.value = data[0].seo_title
+      description.value = data[0].seo_description
       tableOptions.value.dataTable = sections.value.data
       loading.value = false
     }
@@ -200,41 +183,29 @@ export default {
     const submit = async () => {
       loading.value = true
       var basketFiles = []
-      async function processArray(array) {
-        for (const item of array) {
-          const file = dataURLtoFile(item.path, item.name)
-          const uploadedFile = await saveImage(file)
-          .then((res) => {
-            basketFiles.push(res.id)
-          })
-        }
-      }
-      if (imagesPreview.value.length === 0 ) {
-        basketFiles = [3]
-      }
-      if (mode.value === 'edit' && imagesPreview.value[0].uploadedApi) {
-        basketFiles = [imagesPreview.value[0].id]
-      } else {
-        await processArray(imagesPreview.value)
-      }
-      console.log(basketFiles)
+      // async function processArray(array) {
+      //   for (const item of array) {
+      //     const file = dataURLtoFile(item.path, item.name)
+      //     const uploadedFile = await saveImage(file)
+      //     .then((res) => {
+      //       basketFiles.push(res.id)
+      //     })
+      //   }
+      // }
+      // if (imagesPreview.value.length === 0 ) {
+      //   basketFiles = [3]
+      // }
+      // if (mode.value === 'edit' && imagesPreview.value[0].uploadedApi) {
+      //   basketFiles = [imagesPreview.value[0].id]
+      // } else {
+      //   await processArray(imagesPreview.value)
+      // }
+      // console.log(basketFiles)
       const data = {
-        mode: mode.value,
-        wrap_id: basketFiles[0],
-        audio_id: audioBasket.value[0].id,
-        title: title.value,
+        seo_title: title.value,
+        seo_description: description.value
       }
-      if (mode.value === 'edit') {
-        data.id = currentEdit.value
-      }
-      console.log(data)
-      const res = await store.dispatch(`live/loadTrack`, data)
-      console.log(res.status)
-      if (mode.value === 'add') {
-        title.value = ''
-        imagesPreview.value = []
-        audioBasket.value = []
-      }
+      await store.dispatch(`seo/changeSeo`, data)
       getSections()
       loading.value = false
     }
@@ -303,7 +274,6 @@ export default {
     }
     onMounted(() => {
       getSections()
-      getStatus()
     })
 
     return {
@@ -334,7 +304,8 @@ export default {
       currentEdit,
       statusLive,
       changeStatus,
-      getStatus
+      getStatus,
+      description
     }
   }
 }
