@@ -577,7 +577,7 @@ export default {
     }
     const beforeRemove = (index, done, fileList) => {
       const item = fileList[index]
-      imagesPreviewSEO.value.splice(index, 1);
+      imagesPreview.value.splice(index, 1);
       
     }
     const beforeRemoveSEO = (index, done, fileList) => {
