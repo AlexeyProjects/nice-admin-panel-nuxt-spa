@@ -140,7 +140,7 @@
               {{ v$.tags.$errors[0].$message }}
             </div>
           </div>
-          <div class="input">
+          <!-- <div class="input">
             <label for="">
               <span class="label">
                 SEO заголовок
@@ -159,8 +159,8 @@
             </label>
             <div class="">
             </div>
-          </div>
-          <div class="input image">
+          </div> -->
+          <!-- <div class="input image">
             <span>SEO image</span>
             <vue-upload-multiple-image
             :maxImage="1"
@@ -177,7 +177,7 @@
             @before-remove="beforeRemoveSEO"
             :data-images="imagesPreviewSEO"
             ></vue-upload-multiple-image>
-          </div>
+          </div> -->
           
           
           <div class="mb-15" v-if="showMusic" >
