@@ -188,11 +188,16 @@ export default {
       var basketFiles = []
       async function processArray(array) {
         for (const item of array) {
-          const file = dataURLtoFile(item.path, item.name)
-          const uploadedFile = await saveImage(file)
-          .then((res) => {
-            basketFiles.push(res.id)
-          })
+          if (item.uploadedApi) {
+            basketFiles.push(item.id)
+          }
+          if (!item.uploadedApi) {
+            const file = dataURLtoFile(item.path, item.name)
+            const uploadedFile = await saveImage(file)
+            .then((res) => {
+              basketFiles.push(res.id)
+            })
+          }
         }
       }
       if (imagesPreview.value.length === 0 ) {
