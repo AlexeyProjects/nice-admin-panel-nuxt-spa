@@ -111,7 +111,7 @@ export default {
       } else if (paramsSearch.value.order_by_mode === 'desc') {
         paramsSearch.value.order_by_mode = 'asc'
       }
-      if (params[0].field === 'section.slug') {
+      if (params[0].field === 'section.title') {
         paramsSearch.value.order_by_column = 'section_id'
       }
       
