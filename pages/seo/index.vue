@@ -42,7 +42,7 @@
                 {{ v$.title.$errors[0].$message }}
               </div> -->
             </div>
-            <!-- <div class="input image">
+            <div class="input image">
               <span>Фотографии</span>
               <vue-upload-multiple-image
               :maxImage="1"
@@ -58,7 +58,7 @@
               @before-remove="beforeRemove"
               :data-images="imagesPreview"
               ></vue-upload-multiple-image>
-            </div> -->
+            </div>
           </div>
           <button @click.prevent="submit" class="btn">
             Сохранить
@@ -115,6 +115,7 @@ export default {
 
     const loading = ref(false)
     const sections = ref([])
+    const item = ref({})
 
     const editRow = (params) => {
       router.push({
@@ -139,6 +140,8 @@ export default {
       loading.value = true
       const data = await store.dispatch('seo/getMainSeo')
       console.log(data[0])
+      item.value = data[0]
+      imagesLoadForPreview()
       title.value = data[0].seo_title
       description.value = data[0].seo_description
       tableOptions.value.dataTable = sections.value.data
@@ -183,27 +186,28 @@ export default {
     const submit = async () => {
       loading.value = true
       var basketFiles = []
-      // async function processArray(array) {
-      //   for (const item of array) {
-      //     const file = dataURLtoFile(item.path, item.name)
-      //     const uploadedFile = await saveImage(file)
-      //     .then((res) => {
-      //       basketFiles.push(res.id)
-      //     })
-      //   }
-      // }
-      // if (imagesPreview.value.length === 0 ) {
-      //   basketFiles = [3]
-      // }
-      // if (mode.value === 'edit' && imagesPreview.value[0].uploadedApi) {
-      //   basketFiles = [imagesPreview.value[0].id]
-      // } else {
-      //   await processArray(imagesPreview.value)
-      // }
-      // console.log(basketFiles)
+      async function processArray(array) {
+        for (const item of array) {
+          const file = dataURLtoFile(item.path, item.name)
+          const uploadedFile = await saveImage(file)
+          .then((res) => {
+            basketFiles.push(res.id)
+          })
+        }
+      }
+      if (imagesPreview.value.length === 0 ) {
+        basketFiles = [3]
+      }
+      if (mode.value === 'edit' && imagesPreview.value[0].uploadedApi) {
+        basketFiles = [imagesPreview.value[0].id]
+      } else {
+        await processArray(imagesPreview.value)
+      }
+      console.log(basketFiles)
       const data = {
         seo_title: title.value,
-        seo_description: description.value
+        seo_description: description.value,
+        seo_file_id: basketFiles[0]
       }
       await store.dispatch(`seo/changeSeo`, data)
       getSections()
@@ -272,6 +276,21 @@ export default {
       }
       
     }
+    const imagesLoadForPreview = () => {
+      let imagesArray = []
+      if (item.value.seo_file_id) {
+        console.log('seo')
+        imagesArray.push({
+          id: item.value.seo_file_id,
+          path: 'https://test.itisthenice.com/'+item.value.seo_file.src,
+          default: 1,
+          highlight: 1,
+          uploadedApi: true,
+          caption: 'caption to display. receive', // Optional
+        })
+        imagesPreview.value = imagesArray
+      }  
+    }
     onMounted(() => {
       getSections()
     })
@@ -305,7 +324,9 @@ export default {
       statusLive,
       changeStatus,
       getStatus,
-      description
+      description,
+      item,
+      imagesLoadForPreview
     }
   }
 }

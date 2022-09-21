@@ -112,9 +112,9 @@
             class="mb-15"
             :showEdit="false"
             markIsPrimaryText=""
-            markIsPrimaryText=""
             dropText="Перетащите картинку сюда"
             dragText="Перетащите картинку сюда"
+            idUpload="photos"
             browseText="Выбрать картинку"
             :showPrimary="false"
             @upload-success="uploadImageSuccess"
@@ -168,7 +168,7 @@
             :showEdit="false"
             markIsPrimaryText=""
             dir="seos"
-            label="seo"
+            idUpload="seos"
             dropText="Перетащите картинку сюда"
             dragText="Перетащите картинку сюда"
             browseText="Выбрать картинку"
@@ -182,14 +182,31 @@
           
           <div class="mb-15" v-if="showMusic" >
             <inputFile dir="uploaded-files"  @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-5"></inputFile>
-            <div v-if="v$.audioBasket.$errors[0]" class="errors validation-error">
-              {{ v$.audioBasket.$errors[0].$message }}
-            </div>
           </div>
           <div class="mb-15" v-if="showVideo" >
             <inputFile dir="uploaded-files"  @changeFiles="changeVideo" accept="video/*"  @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-5"></inputFile>
             <div v-if="v$.videoBasket.$errors[0]" class="errors validation-error">
               {{ v$.videoBasket.$errors[0].$message }}
+            </div>
+          </div>
+          <div v-if="showVideo" class="input image">
+            <span>Фотографии</span>
+            <vue-upload-multiple-image
+            :maxImage="10"
+            class="mb-15"
+            :showEdit="false"
+            markIsPrimaryText=""
+            dropText="Перетащите картинку сюда"
+            dragText="Перетащите картинку сюда"
+            idUpload="photos"
+            browseText="Выбрать картинку"
+            :showPrimary="false"
+            @upload-success="uploadImageSuccess"
+            @before-remove="beforeRemove"
+            :data-images="imagesPreview"
+            ></vue-upload-multiple-image>
+            <div v-if="v$.imagesPreview.$errors[0]" class="errors validation-error">
+              {{ v$.imagesPreview.$errors[0].$message }}
             </div>
           </div>
           
@@ -388,6 +405,7 @@ export default {
       }
       loading.value = true
       var basketFiles = []
+      var basketFilesSEO = []
       async function processArray(array) {
         for (const item of array) {
           if (item.uploadedApi) {
@@ -402,7 +420,22 @@ export default {
           }
         }
       }
+      async function processArraySEO(array) {
+        for (const item of array) {
+          if (item.uploadedApi) {
+            basketFilesSEO.push(item.id)
+          }
+          if (!item.uploadedApi) {
+            const file = dataURLtoFile(item.path, item.name)
+            const uploadedFile = await saveImage(file)
+            .then((res) => {
+              basketFilesSEO.push(res.id)
+            })
+          }
+        }
+      }
       await processArray(imagesPreview.value)
+      await processArraySEO(imagesPreviewSEO.value)
       audioBasket.value.forEach(item => {
         basketFiles.push(item.id)
       })
@@ -429,6 +462,7 @@ export default {
           item_type_id: 1,
           seo_title: formData.value.seo_title,
           seo_description: formData.value.seo_description,
+          seo_file_id: basketFilesSEO[0],
           price: +formData.value.price,
           count: +formData.value.count,
           date_event: null,
@@ -618,13 +652,6 @@ export default {
       console.log(item.value.section_id)
       if (showMusic.value) {
         console.log('is music')
-        rules.audioBasket = {
-          required: helpers.withMessage('Выберите минимум 1 аудио', required),
-          minLength: minLength(1),
-          $each: {
-            required
-          }
-        }
       } 
       if ( showVideo.value ) {
         rules.videoBasket = {

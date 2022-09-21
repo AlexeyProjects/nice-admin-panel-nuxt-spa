@@ -107,7 +107,7 @@
               class="mb-15"
               :showEdit="false"
               markIsPrimaryText=""
-              idUpload="myIdUpload"
+              idUpload="photos"
               dropText="Перетащите картинку сюда"
               dragText="Перетащите картинку сюда"
               browseText="Выбрать картинку"
@@ -136,27 +136,6 @@
               </div>
             </div>
 
-            <div class="input">
-              <label for="">
-                <span class="label">
-                  SEO заголовок
-                </span>
-                <input v-model="formData.seo_title" type="text">
-              </label>
-              <div class="">
-              </div>
-            </div>
-            <div class="input">
-              <label for="">
-                <span class="label">
-                  SEO описание
-                </span>
-                <input v-model="formData.seo_description" type="text">
-              </label>
-              <div class="">
-              </div>
-            </div>
-
             <!-- <div class="input image">
               <span>SEO image</span>
               <vue-upload-multiple-image
@@ -164,7 +143,7 @@
               class="mb-15"
               :showEdit="false"
               markIsPrimaryText=""
-              idUpload="myIdUpload"
+              idUpload="seos"
               idEdit="myIdUpload"
               dropText="Перетащите картинку сюда"
               dragText="Перетащите картинку сюда"
@@ -522,9 +501,9 @@ export default {
           author_id: choosedAuthor.value.id,
           subtitle: formData.value.subtitle,
           item_type_id: formData.value.item_type_id,
-          seo_title: formData.value.seo_title,
-          seo_description: formData.value.seo_description,
-          seo_file_id: null,
+          seo_title: formData.value.title,
+          seo_description: formData.value.subtitle,
+          seo_file_id: basketFilesSEO[0],
           price: formData.value.price,
           count:formData.value.count,
           price: formData.value.price,
@@ -695,13 +674,6 @@ export default {
     const initRules = () => {
       if (showMusic.value) {
         console.log('is music')
-        rules.audioBasket = {
-          required: helpers.withMessage('Выберите минимум 1 аудио', required),
-          minLength: minLength(1),
-          $each: {
-            required
-          }
-        }
       } 
       if ( showVideo.value ) {
         rules.videoBasket = {
