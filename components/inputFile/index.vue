@@ -48,7 +48,7 @@
         class="select-file-input"
         id="addFile"
         :accept="accept"
-        multiple
+        :multiple="!single"
         @change="selectFile"
       />
       </label>
@@ -63,7 +63,10 @@ export default {
     filesInput: Array,
     onlyShow: Boolean,
     text: String,
-    single: Boolean,
+    single: {
+      type: Boolean,
+      default: false
+    },
     inputName: String,
     accept: String,
     dir: String

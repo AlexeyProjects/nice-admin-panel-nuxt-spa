@@ -64,7 +64,7 @@
               <span class="label">
                 Дата и время
               </span>
-              <date-picker v-model="formData.date_event" format="YYYY-MM-DD hh:mm" valueType="format" type="datetime"></date-picker>
+              <date-picker v-model="formData.date_event" format="YYYY-MM-DD HH:mm" valueType="format" type="datetime"></date-picker>
               <!-- <input type="datetime-local" placeholder="ДД.ММ.ГГГГ, ЧЧ:ММ" :min="new Date().toLocaleDateString('en-ca')+'T08:00'" ref="datePicker" class="date-picker-mm form-control" v-model="formData.date_event" id="date_event" name="date_event" value=""> -->
             </label>
             <div v-if="v$.date_event.$errors[0]" class="errors validation-error">

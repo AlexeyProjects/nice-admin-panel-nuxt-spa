@@ -298,6 +298,9 @@ a {
   &.disable {
     pointer-events: none;
     background-color: rgba($color: #000000, $alpha: .3);
+    &:hover {
+      cursor: not-allowed;
+    }
   }
   &.red {
     background-color: rgb(181, 60, 60);

@@ -52,10 +52,10 @@
               :data-images="imagesPreview"
               ></vue-upload-multiple-image>
             </div>
-            <inputFile dir="broadcast" @loading="loadingFile" @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="false" text="Добавить аудио" class="mb-15"></inputFile>
+            <inputFile dir="broadcast" @loading="loadingFile" @changeFiles="changeAudio" accept="audio/*" @deleteFiles="deleteAudio" :filesInput="audioBasket" :single="true" text="Добавить аудио" class="mb-15"></inputFile>
             <svg v-if="mode === 'edit'" @click="rejectEdit" :class="$style.panelClose" xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg>
           </div>
-          <button @click.prevent="submit" class="btn">
+          <button :class="!canSendFile ? 'disable' : '' " @click.prevent="submit" class="btn">
             {{ mode === 'add' ? 'Добавить' : 'Редактировать' }}
           </button>
         </div>
@@ -197,6 +197,14 @@ export default {
       // imagesPreview.value.push(newFile)
       return newFile
     }
+    const canSendFile = computed(() => {
+      if ( imagesPreview.value.length > 0 && audioBasket.value.length > 0 && title.value) {
+        return true
+      }
+      else {
+        return false
+      }
+    })
     const submit = async () => {
       if (statusLive.value === 'Включен') {
         $toast.error(`Чтобы добавить трек нужно выключить эфир`, { position: 'bottom-center', icon: false, duration: 2000 })
@@ -346,7 +354,8 @@ export default {
       currentEdit,
       statusLive,
       changeStatus,
-      getStatus
+      getStatus,
+      canSendFile
     }
   }
 }
