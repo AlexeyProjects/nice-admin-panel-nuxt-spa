@@ -52,7 +52,7 @@ export default {
       loading.value = false
     }
     const viewingSections = computed(() => {
-      return sections.value.filter(item => item.can_has_cards)
+      return sections.value.filter(item => item.can_has_cards && item.id !== 10)
     })
     const chooseSection = (item) => {
       emit('chooseSection',item)
