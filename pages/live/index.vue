@@ -198,6 +198,10 @@ export default {
       return newFile
     }
     const submit = async () => {
+      if (statusLive.value === 'Включен') {
+        $toast.error(`Чтобы добавить трек нужно выключить эфир`, { position: 'bottom-center', icon: false, duration: 2000 })
+        return
+      }
       loading.value = true
       var basketFiles = []
       async function processArray(array) {
@@ -243,6 +247,10 @@ export default {
       loading.value = state
     }
     const deleteTrack = async (item, index) => {
+      if (statusLive.value === 'Включен') {
+        $toast.error(`Чтобы удалить трек нужно выключить эфир`, { position: 'bottom-center', icon: false, duration: 2000 })
+        return
+      }
       loading.value = true
       await store.dispatch(`live/deleteTrack`, item)
       console.log(index)
@@ -250,6 +258,10 @@ export default {
       loading.value = false
     }
     const editTrack = (item) => {
+      if (statusLive.value === 'Включен') {
+        $toast.error(`Чтобы редактировать трек нужно выключить эфир`, { position: 'bottom-center', icon: false, duration: 2000 })
+        return
+      }
       console.log(item)
       mode.value = 'edit'
       const image = {

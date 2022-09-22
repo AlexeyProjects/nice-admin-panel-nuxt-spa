@@ -35,7 +35,7 @@
               <span class="label">
                 Автор
               </span>
-              <input @input="searchAuthor" @focus="showAuthorSearch = true" v-model="searchAuthorTerm"  type="text">
+              <input @input="searchAuthor" @focus="focusInput" v-model="searchAuthorTerm"  type="text">
             </label>
             <svg class="removeAuthor" @click="removeChoosedAuthor" xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg>
             <div v-if="showAuthorSearch" class="list">
@@ -121,7 +121,7 @@
             @before-remove="beforeRemove"
             :data-images="imagesPreview"
             ></vue-upload-multiple-image>
-            <div v-if="v$.imagesPreview.$errors[0]" class="errors validation-error">
+            <div v-if="showImageValidate" class="errors validation-error">
               {{ v$.imagesPreview.$errors[0].$message }}
             </div>
           </div>
@@ -185,14 +185,14 @@
           </div>
           <div class="mb-15" v-if="showVideo" >
             <inputFile dir="uploaded-files"  @changeFiles="changeVideo" accept="video/*"  @deleteFiles="deleteVideo" :filesInput="videoBasket" :single="false" text="Добавить видео" class="mb-5"></inputFile>
-            <div v-if="v$.videoBasket.$errors[0]" class="errors validation-error">
+            <div v-if="showVideoValidate" class="errors validation-error">
               {{ v$.videoBasket.$errors[0].$message }}
             </div>
           </div>
           <div v-if="showVideo" class="input image">
-            <span>Фотографии</span>
+            <span>Preview к видео</span>
             <vue-upload-multiple-image
-            :maxImage="10"
+            :maxImage="1"
             class="mb-15"
             :showEdit="false"
             markIsPrimaryText=""
@@ -205,7 +205,7 @@
             @before-remove="beforeRemove"
             :data-images="imagesPreview"
             ></vue-upload-multiple-image>
-            <div v-if="v$.imagesPreview.$errors[0]" class="errors validation-error">
+            <div v-if="showImageValidate" class="errors validation-error">
               {{ v$.imagesPreview.$errors[0].$message }}
             </div>
           </div>
@@ -307,13 +307,6 @@ export default {
       title: { required: helpers.withMessage('Введите заголовок', required) },
       tags: { 
         required: helpers.withMessage('Выберите минимум 1 тег', required),
-        minLength: minLength(1),
-        $each: {
-          required
-        }
-      },
-      imagesPreview: { 
-        required: helpers.withMessage('Выберите минимум 1 картинку', required),
         minLength: minLength(1),
         $each: {
           required
@@ -639,7 +632,7 @@ export default {
       console.log(res.data)
       
       if (res.data) {
-        // showAuthorSearch.value = true
+        showAuthorSearch.value = true
       } else {
         // showAuthorSearch.value = false
       }
@@ -661,7 +654,7 @@ export default {
             required
           }
         }
-        delete rules.imagesPreview
+        // delete rules.imagesPreview
       } 
       if (showDate.value) {
         console.log('is date')
@@ -688,6 +681,16 @@ export default {
       choosedAuthor.value = {}
       showAuthorSearch.value = false
     }
+    const focusInput = () => {
+      console.log('focus')
+      searchAuthor()
+    }
+    const showVideoValidate = computed(() => {
+      return v$.value?.videoBasket?.$errors[0]
+    })
+    const showImageValidate = computed(() => {
+      return v$.value?.imagesPreview?.$errors[0]
+    })
     onMounted(() => {
       // getSections()
       showingChooseSection()
@@ -744,7 +747,10 @@ export default {
       removeChoosedAuthor,
       imagesPreviewSEO,
       beforeRemoveSEO,
-      uploadImageSuccessSEO
+      uploadImageSuccessSEO,
+      focusInput,
+      showVideoValidate,
+      showImageValidate
       // configEditor
     }
   }
