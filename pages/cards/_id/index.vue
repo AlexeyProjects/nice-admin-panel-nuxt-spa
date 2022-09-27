@@ -17,7 +17,7 @@
               {{ item.title }}
             </div>
           </div>
-          <div v-if="canDeleteCard" :class="$style.rightpanel">
+          <div v-if="canDeleteCard && deleteCoin && deleteProvod" :class="$style.rightpanel">
             <button @click.prevent="deleteCard" class="btn red">Удалить</button>
           </div>
         </div>
@@ -34,14 +34,21 @@
                 {{ v$.title.$errors[0].$message }}
               </div>
             </div>
-            <div v-click-outside="closeAuthorList" class="input search">
+            <div :class="$style.author" class="input search">
               <label for="">
                 <span class="label">
                   Автор
                 </span>
-                <input @input="searchAuthor" v-model="searchAuthorTerm"  type="text">
+                <!-- <input @input="searchAuthor" v-model="searchAuthorTerm"  type="text"> -->
+                <multiselect 
+                class="mt-15 mb-5"
+                v-model="searchAuthorTerm" 
+                :options="authors" 
+                label="name"
+                track-by="id"
+                :multiple="true"/>
               </label>
-              <svg class="removeAuthor" @click="removeChoosedAuthor" xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg>
+              <!-- <svg class="removeAuthor" @click="removeChoosedAuthor" xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg>
               <div v-if="showAuthorSearch" class="list">
                 <div v-if="!authorSearchItems.length" class="list-item">
                   Ничего не найдено
@@ -49,7 +56,7 @@
                 <div @click="chooseAuthor(item)" v-for="(item, index) in authorSearchItems" :key="index" class="list-item">
                   {{ item.name }}
                 </div>
-              </div>
+              </div> -->
               <!-- <div v-if="v$.title.$errors[0] && v$.title" class="errors">
                 {{ v$.title.$errors[0].$message }}
               </div> -->
@@ -178,7 +185,6 @@
               :maxImage="1"
               class="mb-15"
               :showEdit="false"
-              markIsPrimaryText=""
               markIsPrimaryText=""
               idUpload="previewVideo"
               dropText="Перетащите картинку сюда"
@@ -327,11 +333,12 @@ export default {
     })
     const showChooseSection = ref(false)
     const sectionChoosed = ref(false)
-    const searchAuthorTerm = ref('')
+    const searchAuthorTerm = ref([])
     const authorSearchItems = ref('')
     const showAuthorSearch = ref(false)
     const isProduct = ref(false)
     const tags = ref([])
+    const authors = ref([])
     const valueMultiSelect = ref([])
     const optionsMultiselect = ref([])
     const changedFIle = ref({})
@@ -349,6 +356,7 @@ export default {
     const getSections = async () => {
       loading.value = true
       getTags()
+      getAuthors()
       const data = await store.dispatch(`cards/getCard`, route.value.params.id)
       await getComents()
       item.value = data
@@ -367,8 +375,12 @@ export default {
       if (formData.value.price > 0) {
         isProduct.value = true
       }
-      choosedAuthor.value = formData.value.author
-      searchAuthorTerm.value = formData.value.author.name
+      console.log('formdata', formData.value)
+      formData.value.authors.forEach(item => {
+        searchAuthorTerm.value.push(item)
+      })
+      // searchAuthorTerm.value = formData.value.authors[0]
+      // searchAuthorTerm.value = formData.value.author.name
       v$.value = useVuelidate(rules, formData.value)
       console.log(v$.value)
       loading.value = false
@@ -426,6 +438,17 @@ export default {
         count: 9999
       })
       tags.value = data.data
+    }
+    const getAuthors = async () => {
+      const paramsAuthorSearch = {
+        searchField: '',
+        page: 1,
+        count: 10,
+        order_by_column: '',
+        order_by_mode: '',
+      }
+      const res = await store.dispatch('author/getAuthors', paramsAuthorSearch)
+      authors.value = res.data
     }
     const formatedImage = async (file) => {
      imagesPreview.value.forEach( async (item) => {
@@ -486,6 +509,10 @@ export default {
       formData.value.tags.forEach(item => {
         basketTags.push(item.id)
       })
+      const author_id = []
+      searchAuthorTerm.value.forEach(item => {
+        author_id.push(item.id)
+      })
       if (!isProduct.value) {
         formData.value.price = 0
         formData.value.count = 0
@@ -498,7 +525,7 @@ export default {
           title: formData.value.title,
           text: formData.value.text,
           fileIds: basketFiles,
-          author_id: choosedAuthor.value.id,
+          authors: author_id,
           subtitle: formData.value.subtitle,
           item_type_id: formData.value.item_type_id,
           seo_title: formData.value.title,
@@ -657,6 +684,14 @@ export default {
       videoBasket.value = fileList
     }
 
+    const deleteCoin = computed(() => {
+      return item.value.section_id !== 10
+    })
+
+    const deleteProvod = computed(() => {
+      return item.value.item_type_id !== 2
+    })
+
     const showVideo = computed(() => {
       return item.value.section_id === 2 
     })
@@ -780,6 +815,8 @@ export default {
       optionsMultiselect,
       getTags,
       tags,
+      authors,
+      getAuthors,
       showVideo,
       showMusic,
       imageUploaded,
@@ -802,6 +839,8 @@ export default {
       showTagsValidate,
       showImagesValidate,
       deleteCard,
+      deleteCoin,
+      deleteProvod,
       canDeleteCard,
       canChangeCard,
       paramsComents,
@@ -859,6 +898,11 @@ export default {
       border-bottom: 2px solid #ccc;
       padding: 1rem;
       outline: none;
+    }
+  }
+  .author {
+    input[type=text]{
+      border: 0 !important;
     }
   }
   .head {

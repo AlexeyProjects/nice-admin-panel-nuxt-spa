@@ -23,8 +23,6 @@
     @changePage="changePage"
     @searchInput="searchInput"
     />
-    
-    
   </div>
 </template>
 

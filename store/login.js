@@ -34,11 +34,15 @@ export const actions = {
   async login ({ commit }, params) {
     try {
       const res = await this.$axios.post('login', params)
-      if (res.status === 200) {
-        localStorage.setItem('token', res.data.data.access_token)
-        this.$toast.success('Вы успешно авторизовались', { position: 'bottom-center', icon: false, duration: 2000 })
-        this.$router.push('/')
-        commit('setToken')
+      if (res.data.data.abilities.length > 6) {
+        if (res.status === 200) {
+          localStorage.setItem('token', res.data.data.access_token)
+          this.$toast.success('Вы успешно авторизовались', { position: 'bottom-center', icon: false, duration: 2000 })
+          this.$router.push('/')
+          commit('setToken')
+        }
+      } else { 
+        this.$toast.error('Недостаточно прав', { position: 'bottom-center', icon: false, duration: 2000 })
       }
       return res
     } catch (e) {

@@ -46,7 +46,7 @@
           
         </div>
         <div class="abilities mb-20">
-          <label v-for="(item, index) in abilities">
+          <label v-for="(item, index) in abilities" :key="index">
             <span>
               {{ item.ability_name }}
             </span>

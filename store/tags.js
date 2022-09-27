@@ -17,6 +17,14 @@ export const actions = {
       console.log(e)
     }
   },
+  async getTagCards ({ commit }, params) {
+    try {
+      const res = await this.$axios.post('cardsSearch', params)
+      return res.data.data
+    } catch (e) {
+      console.log(e)
+    }
+  },
   async addTag ({ commit }, params) {
     try {
       const res = await this.$axios.post('addNewTag', params)

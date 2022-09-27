@@ -35,17 +35,24 @@
               <span class="label">
                 Автор
               </span>
-              <input @input="searchAuthor" @focus="focusInput" v-model="searchAuthorTerm"  type="text">
+              <multiselect 
+                class="mt-15 mb-5"
+                v-model="searchAuthorTerm" 
+                :options="authors" 
+                label="name"
+                track-by="id"
+                :multiple="true"/>
+              <!-- <input @input="searchAuthor" @focus="focusInput" v-model="searchAuthorTerm"  type="text"> -->
             </label>
-            <svg class="removeAuthor" @click="removeChoosedAuthor" xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg>
-            <div v-if="showAuthorSearch" class="list">
+            <!-- <svg class="removeAuthor" @click="removeChoosedAuthor" xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg> -->
+            <!-- <div v-if="showAuthorSearch" class="list">
               <div v-if="!authorSearchItems.length" class="list-item">
                 Ничего не найдено
               </div>
               <div @click="chooseAuthor(item)" v-for="(item, index) in authorSearchItems" :key="index" class="list-item">
                 {{ item.name }}
               </div>
-            </div>
+            </div> -->
             <div v-if="v$.title.$errors[0] && v$.title" class="errors">
               {{ v$.title.$errors[0].$message }}
             </div>
@@ -280,7 +287,7 @@ export default {
     const tags = ref([])
     const valueMultiSelect = ref([])
     const optionsMultiselect = ref([])
-    const searchAuthorTerm = ref('')
+    const searchAuthorTerm = ref([])
     const authorSearchItems = ref('')
     const imagesPreviewSEO = ref([])
     const showAuthorSearch = ref(false)
@@ -323,6 +330,7 @@ export default {
     const changedFIle = ref({})
     const imageUploaded = ref([])
     const uploadedFiles = ref([])
+    const authors = ref([])
     const videoBasket = ref([])
     const audioBasket = ref([])
     const datePicker = ref(null)
@@ -367,7 +375,20 @@ export default {
     const changeImages = (event) => {
 
     }
+    const getAuthors = async () => {
+      const paramsAuthorSearch = {
+        searchField: '',
+        page: 1,
+        count: 10,
+        order_by_column: '',
+        order_by_mode: '',
+      }
+      const res = await store.dispatch('author/getAuthors', paramsAuthorSearch)
+      authors.value = res.data
+    }
+
     const getTags = async () => {
+      getAuthors()
       loading.value = true
       const data = await store.dispatch('tags/getTags', {
         entity: 'tags',
@@ -439,10 +460,15 @@ export default {
       formData.value.tags.forEach(item => {
         basketTags.push(item.id)
       })
+      const author_id = []
+      searchAuthorTerm.value.forEach(item => {
+        author_id.push(item.id)
+      })
       if (!isProduct.value) {
         formData.price = 0
         formData.count = 0
       }
+      console.log('author_id', author_id)
       const data = {
         mode: "add",
         data: {
@@ -450,7 +476,7 @@ export default {
           title: formData.value.title,
           text: formData.value.text,
           fileIds: basketFiles,
-          author_id: choosedAuthor.value.id,
+          authors: author_id,
           subtitle: formData.value.subtitle,
           item_type_id: 1,
           seo_title: formData.value.title,
@@ -750,7 +776,9 @@ export default {
       uploadImageSuccessSEO,
       focusInput,
       showVideoValidate,
-      showImageValidate
+      showImageValidate,
+      getAuthors,
+      authors
       // configEditor
     }
   }
